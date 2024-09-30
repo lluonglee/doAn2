@@ -1,7 +1,6 @@
 const teacherService = require("../services/teacherService");
 
 const teacherController = {
-  
   createTeacher: async (req, res) => {
     try {
       const { ten, email, password, confirmPassword } = req.body;
@@ -39,38 +38,57 @@ const teacherController = {
     }
   },
   getAllTeacher: async (req, res) => {
-    try{
+    try {
       const response = await teacherService.getAllTeacher();
       return res.status(200).json(response);
-
-    }catch(error){
+    } catch (error) {
       return {
         status: "ERR",
-        message: error.message
-      }
-
+        message: error.message,
+      };
     }
   },
-  getDetailTeacher: async(req, res) =>{
+  getDetailTeacher: async (req, res) => {
     try {
       const teacherDetail = req.params.id;
-      if(!teacherDetail){
+      if (!teacherDetail) {
         return res.status(400).json({
-          status:"ERR",
-          message:"Teacher ID is required"
-        })
+          status: "ERR",
+          message: "Teacher ID is required",
+        });
       }
 
       const response = await teacherService.getDetailTeacher(teacherDetail);
-      return res.status(200).json(response)
-      
+      return res.status(200).json(response);
     } catch (error) {
-      return{
+      return {
         status: "ERR",
-        message: error.message
-      }
-      
+        message: error.message,
+      };
     }
-  }
+  },
+  updateTeacher: async (req, res) => {
+    try {
+      const teacherId = req.params.id;
+      const data = req.body;
+      if (!teacherId) {
+        return res.status(400).json({
+          status: "ERR",
+          message: "Teacher Id is required",
+        });
+      }
+      const response = await teacherService.updateTeacher(teacherId, data);
+      
+      if (response.status === "ERR") {
+        return res.status(404).json(response);
+      }
+      return res.status(200).json(response);
+    } catch (error) {
+      return {
+        status: "ERR",
+        message: error.message,
+      };
+    }
+  },
 };
 module.exports = teacherController;
