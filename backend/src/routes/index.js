@@ -1,7 +1,7 @@
-const userRouter = require("./userRouter")
+const teacherRouter = require("./teacherRouter")
 
 const routes = (app) =>{
-    app.use('/api/user',)
+    app.use('/api/teacher',teacherRouter)
 }
 
 module.exports = routes
