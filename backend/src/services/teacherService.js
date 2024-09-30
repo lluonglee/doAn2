@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const Teacher = require("../models/teacherModels");
+//create teacher
 const createTeacher = async(newTeacher) =>{
     const {ten, email, password} = newTeacher;
     try{
@@ -32,7 +33,26 @@ const createTeacher = async(newTeacher) =>{
 
     }
 }
+//get all teacher
+const getAllTeacher = async () =>{
+    try{
+        const getAll = await Teacher.find();
+        return{
+            status:"OK",
+            message:"Get all teacher successful",
+            data: getAll
+        }
+
+    }catch(error){
+        return{
+            status:"ERR",
+            message: error.message
+        }
+
+    }
+}
 
 module.exports={
-    createTeacher
+    createTeacher,
+    getAllTeacher
 }
