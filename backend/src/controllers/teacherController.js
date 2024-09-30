@@ -1,6 +1,7 @@
 const teacherService = require("../services/teacherService");
 
 const teacherController = {
+  
   createTeacher: async (req, res) => {
     try {
       const { ten, email, password, confirmPassword } = req.body;
@@ -50,5 +51,26 @@ const teacherController = {
 
     }
   },
+  getDetailTeacher: async(req, res) =>{
+    try {
+      const teacherDetail = req.params.id;
+      if(!teacherDetail){
+        return res.status(400).json({
+          status:"ERR",
+          message:"Teacher ID is required"
+        })
+      }
+
+      const response = await teacherService.getDetailTeacher(teacherDetail);
+      return res.status(200).json(response)
+      
+    } catch (error) {
+      return{
+        status: "ERR",
+        message: error.message
+      }
+      
+    }
+  }
 };
 module.exports = teacherController;

@@ -51,8 +51,33 @@ const getAllTeacher = async () =>{
 
     }
 }
+//detail teacher
+const getDetailTeacher = async(id) =>{
+    try{
+        const teacher = await Teacher.findById(id);
+        if(!teacher){
+            return{
+                status: "ERR",
+                message: "Teacher not found"
+            }
+        }
+        return{
+            status: "OK",
+            message:"find successful",
+            data: teacher
+        }
+    }catch(error){
+        return{
+            status:"ERR",
+            message: error.message
+        }
+    }
+
+}
 
 module.exports={
     createTeacher,
-    getAllTeacher
+    getAllTeacher,
+    getDetailTeacher
+
 }
