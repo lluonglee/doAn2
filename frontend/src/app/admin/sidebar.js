@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css"; // Import Bootstrap icons
+import Link from "next/link";
 export default function Sidebar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -42,27 +43,12 @@ export default function Sidebar() {
             </div>
             <div className="my-2 bg-gray-600 h-[1px]"></div>
           </div>
-          <div className="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700 text-white">
-            <i className="bi bi-search text-sm"></i>
-            <input
-              type="text"
-              placeholder="Search"
-              className="text-[15px] ml-4 w-full bg-transparent focus:outline-none"
-            />
-          </div>
           <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white">
             <i className="bi bi-house-door-fill"></i>
             <span className="text-[15px] ml-4 text-gray-200 font-bold">
-              Home
+              <Link href="/">Home</Link>
             </span>
           </div>
-          <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white">
-            <i className="bi bi-bookmark-fill"></i>
-            <span className="text-[15px] ml-4 text-gray-200 font-bold">
-              Bookmark
-            </span>
-          </div>
-          <div className="my-4 bg-gray-600 h-[1px]"></div>
           <div
             className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white"
             onClick={toggleDropdown}
@@ -70,7 +56,7 @@ export default function Sidebar() {
             <i className="bi bi-chat-left-text-fill"></i>
             <div className="flex justify-between w-full items-center">
               <span className="text-[15px] ml-4 text-gray-200 font-bold">
-                Chatbox
+                Quản lý đào tạo
               </span>
               <span
                 className={`text-sm transition-transform ${
@@ -88,20 +74,29 @@ export default function Sidebar() {
               id="submenu"
             >
               <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
-                Social
+                <Link href="/admin/danhMuc">Danh mục</Link>
               </h1>
               <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
-                Personal
+                <Link href="/admin/daoTao">Chương trình đào tạo</Link>
               </h1>
               <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
-                Friends
+                <Link href="/admin/capDo">Cấp độ</Link>
+              </h1>
+              <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
+                <Link href="/admin/lopHoc">Lớp học</Link>
+              </h1>
+              <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
+                <Link href="/admin/hocVien">Học viên</Link>
+              </h1>
+              <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
+                <Link href="/admin/lichHoc">Lịch học</Link>
               </h1>
             </div>
           )}
           <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white">
             <i className="bi bi-box-arrow-in-right"></i>
             <span className="text-[15px] ml-4 text-gray-200 font-bold">
-              Logout
+              <Link href="/login">Logout</Link>
             </span>
           </div>
         </div>
