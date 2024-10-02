@@ -89,8 +89,33 @@ const getAllCourse = async () =>{
     };
   }
 };
+const updateCourse = async (id, data) => {
+  try {
+    const existingCourse = await Course.findById(id);
+
+    if (!existingCourse) {
+      return {
+        status: "ERR",
+        message: "Course not found",
+      };
+    }
+
+    const updateCourse = await Course.findByIdAndUpdate(id, data, { new: true });
+    return {
+      status: "Ok",
+      message: "Course updated successfully",
+      data: updateCourse,
+    };
+  } catch (error) {
+    return {
+      status: "ERR",
+      message: error.message,
+    };
+  }
+};
 module.exports = {
   createCourse,
   getAllCourse,
-  detailCourse
+  detailCourse,
+  updateCourse
 };

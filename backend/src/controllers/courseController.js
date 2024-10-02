@@ -80,6 +80,33 @@ const courseController = {
       }
     }
   },
+  updateCourse: async (req, res) => {
+    try {
+      const courseId = req.params.id;
+      const data = req.body;
+
+      if (!courseId) {
+        return res.status(400).json({
+          status: "ERR",
+          message: "Course ID is required",
+        });
+      }
+   
+      const response = await CourseService.updateCourse(courseId, data);
+
+      if (response.status === "ERR") {
+        return res.status(404).json(response);
+      }
+
+      return res.status(200).json(response);
+    } catch (error) {
+      return res.status(500).json({
+        status: "ERR",
+        message: "An error ocurred while updating the user",
+        err: error.message,
+      });
+    }
+  },
 };
 
 module.exports = courseController
