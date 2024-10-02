@@ -12,6 +12,8 @@ const teacherSchema  = new mongoose.Schema({
         ref:'Course'
     }]
 
+},{
+    timestamps: true
 })
 
 module.exports = mongoose.model('Teacher',teacherSchema)

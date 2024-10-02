@@ -90,5 +90,19 @@ const teacherController = {
       };
     }
   },
+  deleteTeacher: async (req, res) => {
+    const teacherID = await req.params.id;
+
+    if (!teacherID) {
+      return res.status(400).json({
+        status: "ERR",
+        message: "Teacher ID is required",
+      });
+    }
+
+
+    const response = await teacherService.deleteTeacher(teacherID);
+    return res.status(200).json(response);
+  },
 };
 module.exports = teacherController;

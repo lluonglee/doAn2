@@ -95,10 +95,35 @@ const updateTeacher = async (id, data) => {
     };
   }
 };
+//delete teacher
+const deleteTeacher = async (id) => {
+  try {
+    const existingTeacher = await Teacher.findById(id);
+
+    if (!existingTeacher) {
+      return {
+        status: "ERR",
+        message: "id teacher not found",
+      };
+    }
+
+    await Teacher.findByIdAndDelete(existingTeacher);
+    return {
+      status: "OK",
+      message: "Delete teacher successful",
+    };
+  } catch (err) {
+    return {
+      status: "ERR",
+      message: err.message,
+    };
+  }
+};
 
 module.exports = {
   createTeacher,
   getAllTeacher,
   getDetailTeacher,
-  updateTeacher
+  updateTeacher,
+  deleteTeacher
 };
