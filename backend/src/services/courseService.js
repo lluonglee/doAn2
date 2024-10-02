@@ -113,9 +113,37 @@ const updateCourse = async (id, data) => {
     };
   }
 };
+const deleteCourse = async (id) =>{
+  try{
+    const courseID = await Course.findById(id);
+    if(!courseID){
+      return{
+        status:"ERR",
+        message:"not found Course ID",
+
+      }
+    }
+
+    await Course.findByIdAndDelete(courseID);
+    return{
+      status:"Ok",
+      message:"Delete Course successful"
+    }
+
+  }catch(error){
+    return{
+      status: "ERR",
+      message: error.message
+    }
+
+  }
+
+}
+
 module.exports = {
   createCourse,
   getAllCourse,
   detailCourse,
-  updateCourse
+  updateCourse,
+  deleteCourse
 };

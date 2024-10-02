@@ -107,6 +107,29 @@ const courseController = {
       });
     }
   },
+    //delete
+    deleteCourse: async (req, res) =>{
+      try{
+          const courseID = req.params.id
+          if(!courseID){
+              return res.status(400).json({
+                  status: "ERR",
+                  message:"not found Course"
+              })
+          }
+  
+          const response = await CourseService.deleteCourse(courseID);
+          return res.status(200).json(response)
+  
+  
+      }catch(err){
+          return res.status(404).json({
+              status:"ERR",
+              message: err.message
+          })
+  
+      }
+    },
 };
 
 module.exports = courseController

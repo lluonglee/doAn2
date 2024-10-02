@@ -6,5 +6,6 @@ router.post("/create-course", courseController.createCourse)
 router.get("/get-all", courseController.getAllCourse)
 router.get("/detail-course/:id", courseController.getDetailCourse)
 router.put("/update-course/:id", courseController.updateCourse)
+router.delete("/delete-course/:id", courseController.deleteCourse)
 
 module.exports = router
