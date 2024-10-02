@@ -66,7 +66,31 @@ const getAllCourse = async () =>{
 
   }
  }
+ const detailCourse = async (id) => {
+  try {
+    const course = await Course.findById(id);
+
+    if (!course) {
+      return {
+        status: "ERR",
+        message: "the Course not found",
+      };
+    }
+
+    return{
+      status:"OK",
+      message:"Successfully",
+      data: course
+    }
+  } catch (error) {
+    return {
+      status: "ERR",
+      message: error.message,
+    };
+  }
+};
 module.exports = {
   createCourse,
-  getAllCourse
+  getAllCourse,
+  detailCourse
 };

@@ -58,6 +58,28 @@ const courseController = {
       };
     }
   },
+  getDetailCourse: async (req, res) => {
+    try {
+      const courseIdDetail = req.params.id;
+
+      if (!courseIdDetail) {
+        return res.status(400).json({
+          status: "ERR",
+          message: "Course ID is required",
+        });
+      }
+
+      const response = await CourseService.detailCourse(courseIdDetail);
+
+      return res.status(200).json(response);
+    } catch (err) {
+
+      return{
+        status: "ERR",
+        message: err.message
+      }
+    }
+  },
 };
 
 module.exports = courseController
