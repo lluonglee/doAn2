@@ -49,7 +49,24 @@ const createCourse = async (newCourse) => {
     };
   }
 };
+const getAllCourse = async () =>{
+  try{
+    const getAll = await Course.find();
+    return{
+      status:"OK",
+      message:"get all course Successful",
+      data: getAll
+    }
 
+  }catch(err){
+    return{
+      status:"ERR",
+      message: err.message
+    }
+
+  }
+ }
 module.exports = {
   createCourse,
+  getAllCourse
 };

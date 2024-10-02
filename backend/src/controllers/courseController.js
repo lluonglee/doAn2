@@ -47,6 +47,17 @@ const courseController = {
       });
     }
   },
+  getAllCourse: async (req, res) => {
+    try {
+      const getAll = await CourseService.getAllCourse();
+      return res.status(200).json(getAll);
+    } catch (err) {
+      return {
+        status: "ERR",
+        message: err.message,
+      };
+    }
+  },
 };
 
 module.exports = courseController
