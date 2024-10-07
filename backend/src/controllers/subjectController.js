@@ -19,6 +19,18 @@ const subjectController = {
       });
     }
   },
+  getAllSubject: async (req, res) => {
+    try {
+      const getAll = await SubjectService.getAllSubject();
+      return res.status(200).json(getAll);
+    } catch (err) {
+      return {
+        status: "ERR",
+        message: err.message,
+      };
+    }
+  },
+
 };
 
 module.exports = subjectController;

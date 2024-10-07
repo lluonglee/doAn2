@@ -30,7 +30,24 @@ const CreateSubject = async (newSubject) => {
     };
   }
 };
-
+const getAllSubject = async () =>{
+    try{
+      const getAll = await Subject.find();
+      return{
+        status:"OK",
+        message:"get all subject Successful",
+        data: getAll
+      }
+  
+    }catch(err){
+      return{
+        status:"ERR",
+        message: err.message
+      }
+  
+    }
+   }
 module.exports = {
   CreateSubject,
+  getAllSubject
 };
