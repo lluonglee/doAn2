@@ -1,0 +1,27 @@
+.admin-layout {
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    display: flex;
+    height: 100vh;
+    /* Chiều cao toàn màn hình */
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #333;
+    color: white;
+    position: fixed;
+    /* Cố định vị trí */
+    height: 100%;
+}
+
+.content {
+    margin-left: 250px;
+    /* Đẩy nội dung sang phải để tránh đè lên sidebar */
+    padding: 20px;
+    width: calc(100% - 250px);
+    /* Điều chỉnh độ rộng nội dung */
+}
