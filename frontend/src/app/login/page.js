@@ -1,20 +1,23 @@
-//http://localhost:3000/login
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [login, setLogin] = useState(false);
+  const router = useRouter(); // Khởi tạo router
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // in real delete it
+    e.preventDefault(); // Ngăn chặn hành động mặc định
     setLoading(true);
     setError(null);
 
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch("http://localhost:5000/api/teacher/login", {
+        // Đảm bảo URL là đúng
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -24,13 +27,18 @@ export default function Login() {
 
       const data = await res.json();
 
-      if (res.ok) {
-        alert("Login successful! Token: " + data.token);
+      if (res.ok && !data.isAdmin) {
+        router.push("/");
+        console.log("Login successful! Token: " + data.accessToken); // accessToken
+        console.log(data.isAdmin);
+      } else if (res.ok && data.isAdmin) {
+        router.push("/admin");
       } else {
-        setError(data.message);
+        setError(data.message || "Login failed.");
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");
+      console.log(err);
     } finally {
       setLoading(false);
     }
