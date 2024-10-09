@@ -1,7 +1,8 @@
 const teacherService = require("../services/teacherService");
 const Teacher = require("../models/teacherModels");
-const jwt = require("jsonwebtoken")
-const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const BlackList = require("../models/blackListModel")
 const teacherController = {
   createTeacher: async (req, res) => {
     try {
@@ -41,43 +42,67 @@ const teacherController = {
   },
   generateAccessToken: (teacher) => {
     return jwt.sign(
-        {
-            id: teacher._id,  // Use _id instead of id
-            admin: teacher.isAdmin,
-        },
-        process.env.JWT_ACCESS_KEY,
-        { expiresIn: "30s" }
+      {
+        id: teacher._id, // Use _id instead of id
+        admin: teacher.isAdmin,
+      },
+      process.env.JWT_ACCESS_KEY,
+      { expiresIn: "50s" }
     );
-},
- 
-loginTeacher: async (req, res) => {
-  try {
-      console.log("Login attempt:", req.body.email);
+  },
+//log in
+  loginTeacher: async (req, res) => {
+    try {
       const teacher = await Teacher.findOne({ email: req.body.email });
       if (!teacher) {
-          console.log("No teacher found with this email");
-          return res.status(404).json("wrong email!!");
+        console.log("No teacher found with this email");
+        return res.status(404).json("wrong email!!");
       }
       console.log("Teacher found:", teacher);
 
-      const validPassword = await bcrypt.compare(req.body.password, teacher.password);
+      const validPassword = await bcrypt.compare(
+        req.body.password,
+        teacher.password
+      );
       if (!validPassword) {
-          console.log("Invalid password");
-          return res.status(404).json("Wrong password");
+        console.log("Invalid password");
+        return res.status(404).json("Wrong password");
       }
 
       if (teacher && validPassword) {
-          const accessToken = teacherController.generateAccessToken(teacher);
-          const { password, ...others } = teacher._doc;
-          console.log("Login successful:", others);
-          return res.status(200).json({ ...others, accessToken });
+        const accessToken = teacherController.generateAccessToken(teacher);
+        const { password, ...others } = teacher._doc;
+        
+        return res.status(200).json({ ...others, accessToken });
       }
-  } catch (err) {
+    } catch (err) {
       console.log("Error during login:", err);
       res.status(500).json(err);
-  }
-},
+    }
+  },
+  //log out
+  logoutTeacher: async (req, res) =>{
+    const token = req.headers.token;
+    
+    if(!token){
+      return res.status(400).json({message:"No token provided"})
+    }
+    const accessToken = token.split(" ")[1]
+    try {
+      const decoded = jwt.decode(accessToken);
+      const expiration = new Date(decoded.exp * 1000);
 
+      const blackListedToken = new BlackList({
+        token: accessToken,
+        expireAt: expiration
+      })
+      await blackListedToken.save();
+      return res.status(200).json({message:"Logged out successful"})
+    } catch (error) {
+      return res.status(500).json({message:"Error during logout", error})
+      
+    }
+  },
 
   getAllTeacher: async (req, res) => {
     try {

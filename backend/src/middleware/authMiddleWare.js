@@ -1,10 +1,16 @@
 const jwt = require("jsonwebtoken");
+const BlackList = require("../models/blackListModel")
 
 const authMiddleWare = {
-    verifyToken: (req, res, next) => {
+    verifyToken: async (req, res, next) => {
         const token = req.headers.token;
         if (token) {
             const accessToken = token.split(" ")[1];
+            
+            const blacklisted = await BlackList.findOne({token:accessToken})
+            if (blacklisted) {
+                return res.status(403).json("Token is blacklisted");
+            }
             jwt.verify(accessToken, process.env.JWT_ACCESS_KEY, (error, teacher) => {
                 if (error) {
                     return res.status(403).json({
@@ -21,9 +27,9 @@ const authMiddleWare = {
         }
     },
 
-    verifyTokenAdmin: (req, res, next) => {
+    verifyTokenAdmin: async (req, res, next) => {
         authMiddleWare.verifyToken(req, res, () => {
-            if (req.teacher.id === req.params.id || req.teacher.isAdmin) {
+            if (req.teacher.id == req.params.id || req.teacher.isAdmin) {
                 next();
             } else {
                 return res.status(403).json({ message: "You're not allowed to perform this action" });
