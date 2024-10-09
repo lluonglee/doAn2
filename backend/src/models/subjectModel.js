@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const subjectSchema = new mongoose.Schema({
-    ma_mon: {
+  ma_mon: {
     type: String,
     required: true,
   },
@@ -9,12 +9,24 @@ const subjectSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  so_tin_chi: {
+    type: Number,
+    required: true,
+  },
+  tin_chi_ly_thuyet: {
+    type: Number,
+    required: true,
+  },
+  tin_chi_thuc_hanh: {
+    type: Number,
+    required: true,
+  },
   cac_lop_hoc_phan: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Course',
+      ref: "Course",
     },
   ],
-}) 
+});
 
-module.exports = mongoose.model('Subject', subjectSchema);
+module.exports = mongoose.model("Subject", subjectSchema);

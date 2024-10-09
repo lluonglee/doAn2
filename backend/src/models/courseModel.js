@@ -2,12 +2,9 @@ const mongoose = require("mongoose");
 
 //Schema lớp học phần
 const courseSchema = new mongoose.Schema({
-  ma_mon: {
-    type: String,
-    required: true,
-  },
-  ten_mon: {
-    type: String,
+  subject: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Subject", // Tham chiếu đến Subject
     required: true,
   },
   ma_lop_hoc_phan: {

@@ -1,12 +1,10 @@
-
 const CourseService = require("../services/courseService");
 
 const courseController = {
   createCourse: async (req, res) => {
     try {
       const {
-        ma_mon,
-        ten_mon,
+        subject,
         ma_lop_hoc_phan,
         si_so,
         khoa_chuyen_mon,
@@ -15,30 +13,29 @@ const courseController = {
         loai_mon_hoc,
         tin_chi_ly_thuyet,
         tin_chi_thuc_hanh,
-        giang_vien_phu_trach
+        tkb,
+        giang_vien_phu_trach,
       } = req.body;
       if (
-        !ma_mon ||
-        !ten_mon ||
-        !ma_lop_hoc_phan ||
-        !si_so ||
-        !loai_mon_hoc ||
-        !so_tiet_truc_tiep ||
-        !so_tiet_tong ||
-        !tin_chi_ly_thuyet ||
-        !so_tiet_truc_tiep ||
-        !khoa_chuyen_mon ||
-        !tin_chi_thuc_hanh ||
-        !giang_vien_phu_trach
-
-     
+        (!subject ||
+          !ma_lop_hoc_phan ||
+          !si_so ||
+          !loai_mon_hoc ||
+          !so_tiet_truc_tiep ||
+          !so_tiet_tong ||
+          !tin_chi_ly_thuyet ||
+          !so_tiet_truc_tiep ||
+          !khoa_chuyen_mon ||
+          !tin_chi_thuc_hanh ||
+          !tkb ||
+          tkb.length === 0,
+        !giang_vien_phu_trach)
       ) {
         return res.status(400).json({
           status: "ERR",
           message: "the input is required",
         });
       }
-
       const response = await CourseService.createCourse(req.body);
       return res.status(200).json(response);
     } catch (error) {
@@ -73,11 +70,10 @@ const courseController = {
 
       return res.status(200).json(response);
     } catch (err) {
-
-      return{
+      return {
         status: "ERR",
-        message: err.message
-      }
+        message: err.message,
+      };
     }
   },
   updateCourse: async (req, res) => {
@@ -91,7 +87,7 @@ const courseController = {
           message: "Course ID is required",
         });
       }
-   
+
       const response = await CourseService.updateCourse(courseId, data);
 
       if (response.status === "ERR") {
@@ -107,29 +103,26 @@ const courseController = {
       });
     }
   },
-    //delete
-    deleteCourse: async (req, res) =>{
-      try{
-          const courseID = req.params.id
-          if(!courseID){
-              return res.status(400).json({
-                  status: "ERR",
-                  message:"not found Course"
-              })
-          }
-  
-          const response = await CourseService.deleteCourse(courseID);
-          return res.status(200).json(response)
-  
-  
-      }catch(err){
-          return res.status(404).json({
-              status:"ERR",
-              message: err.message
-          })
-  
+  //delete
+  deleteCourse: async (req, res) => {
+    try {
+      const courseID = req.params.id;
+      if (!courseID) {
+        return res.status(400).json({
+          status: "ERR",
+          message: "not found Course",
+        });
       }
-    },
+
+      const response = await CourseService.deleteCourse(courseID);
+      return res.status(200).json(response);
+    } catch (err) {
+      return res.status(404).json({
+        status: "ERR",
+        message: err.message,
+      });
+    }
+  },
 };
 
-module.exports = courseController
+module.exports = courseController;

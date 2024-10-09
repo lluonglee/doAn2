@@ -3,8 +3,8 @@ const SubjectService = require("../services/subjectService");
 const subjectController = {
   createSubject: async (req, res) => {
     try {
-      const { ma_mon, ten_mon } = req.body;
-      if (!ma_mon || !ten_mon) {
+      const { ma_mon, ten_mon,so_tin_chi,tin_chi_ly_thuyet,tin_chi_thuc_hanh } = req.body;
+      if (!ma_mon || !ten_mon  || !so_tin_chi  || !tin_chi_ly_thuyet  || !tin_chi_thuc_hanh) {
         return res.status(400).json({
           status: "ERR",
           message: "the input is required",

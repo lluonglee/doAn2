@@ -1,5 +1,7 @@
 const teacherService = require("../services/teacherService");
-
+const Teacher = require("../models/teacherModels");
+const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt")
 const teacherController = {
   createTeacher: async (req, res) => {
     try {
@@ -37,6 +39,46 @@ const teacherController = {
       });
     }
   },
+  generateAccessToken: (teacher) => {
+    return jwt.sign(
+        {
+            id: teacher._id,  // Use _id instead of id
+            admin: teacher.isAdmin,
+        },
+        process.env.JWT_ACCESS_KEY,
+        { expiresIn: "30s" }
+    );
+},
+ 
+loginTeacher: async (req, res) => {
+  try {
+      console.log("Login attempt:", req.body.email);
+      const teacher = await Teacher.findOne({ email: req.body.email });
+      if (!teacher) {
+          console.log("No teacher found with this email");
+          return res.status(404).json("wrong email!!");
+      }
+      console.log("Teacher found:", teacher);
+
+      const validPassword = await bcrypt.compare(req.body.password, teacher.password);
+      if (!validPassword) {
+          console.log("Invalid password");
+          return res.status(404).json("Wrong password");
+      }
+
+      if (teacher && validPassword) {
+          const accessToken = teacherController.generateAccessToken(teacher);
+          const { password, ...others } = teacher._doc;
+          console.log("Login successful:", others);
+          return res.status(200).json({ ...others, accessToken });
+      }
+  } catch (err) {
+      console.log("Error during login:", err);
+      res.status(500).json(err);
+  }
+},
+
+
   getAllTeacher: async (req, res) => {
     try {
       const response = await teacherService.getAllTeacher();
@@ -78,7 +120,7 @@ const teacherController = {
         });
       }
       const response = await teacherService.updateTeacher(teacherId, data);
-      
+
       if (response.status === "ERR") {
         return res.status(404).json(response);
       }
@@ -99,7 +141,6 @@ const teacherController = {
         message: "Teacher ID is required",
       });
     }
-
 
     const response = await teacherService.deleteTeacher(teacherID);
     return res.status(200).json(response);

@@ -2,8 +2,7 @@ const Course = require("../models/courseModel");
 
 const createCourse = async (newCourse) => {
   const {
-    ma_mon,
-    ten_mon,
+    subject,
     ma_lop_hoc_phan,
     si_so,
     khoa_chuyen_mon,
@@ -12,20 +11,20 @@ const createCourse = async (newCourse) => {
     loai_mon_hoc,
     tin_chi_ly_thuyet,
     tin_chi_thuc_hanh,
+    tkb,
     giang_vien_phu_trach
   } = newCourse;
   try {
-    const existingCourse = await Course.findOne({ ma_mon });
+    const existingCourse = await Course.findOne({subject ,ma_lop_hoc_phan });
     if (existingCourse) {
       return {
         status: "ERR",
-        message: "This ma mon has already been used",
+        message: "This ma lop hoac Subject has already been used",
       };
     }
 
     const createCourse = await Course.create({
-      ma_mon,
-      ten_mon,
+      subject,
       ma_lop_hoc_phan,
       si_so,
       khoa_chuyen_mon,
@@ -34,6 +33,7 @@ const createCourse = async (newCourse) => {
       loai_mon_hoc,
       tin_chi_ly_thuyet,
       tin_chi_thuc_hanh,
+      tkb,
       giang_vien_phu_trach
     });
 

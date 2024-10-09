@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const Teacher = require("../models/teacherModels");
 //create teacher
 const createTeacher = async (newTeacher) => {
-  const { ten, email, password } = newTeacher;
+  const { ten, email, password,cac_lop_dang_day } = newTeacher;
   try {
     const existingTeacher = await Teacher.findOne({ email });
     if (existingTeacher) {
@@ -17,6 +17,7 @@ const createTeacher = async (newTeacher) => {
       ten,
       email,
       password: hashedPassword,
+      cac_lop_dang_day
     });
 
     return {
@@ -31,6 +32,7 @@ const createTeacher = async (newTeacher) => {
     };
   }
 };
+
 //get all teacher
 const getAllTeacher = async () => {
   try {

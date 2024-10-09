@@ -1,7 +1,7 @@
 const Subject = require("../models/subjectModel");
 
 const CreateSubject = async (newSubject) => {
-  const { ma_mon, ten_mon } = newSubject;
+  const { ma_mon, ten_mon, so_tin_chi,tin_chi_ly_thuyet,tin_chi_thuc_hanh } = newSubject;
 
   try {
     const existingSubject = await Subject.findOne({ ma_mon });
@@ -15,6 +15,9 @@ const CreateSubject = async (newSubject) => {
     const createSubject = await Subject.create({
       ma_mon,
       ten_mon,
+      so_tin_chi,
+      tin_chi_ly_thuyet,
+      tin_chi_thuc_hanh
     });
 
     return {
