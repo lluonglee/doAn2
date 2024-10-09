@@ -9,7 +9,7 @@ const routes = require("./routes")
 dotenv.config()
 const app = express();
 
-mongoose.connect(process.env.MONGODB_CONNECT)
+mongoose.connect(process.env.MONGODB_CONNECTION)
 .then(() =>{
     console.log("Connect to database")
 })

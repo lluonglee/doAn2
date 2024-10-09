@@ -8,9 +8,7 @@ public/
 out/
 
 # Bỏ qua các file cấu hình môi trường
-.env
-.env.local
-.env.*.local
+
 
 # Bỏ qua các log files
 npm-debug.log*
