@@ -44,7 +44,7 @@ const teacherController = {
   generateAccessToken: (teacher) => {
     return jwt.sign(
       {
-        id: teacher._id, // Use _id instead of id
+        id: teacher._id, 
         admin: teacher.isAdmin,
       },
       process.env.JWT_ACCESS_KEY,

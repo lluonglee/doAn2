@@ -1,4 +1,5 @@
 const Course = require("../models/courseModel");
+const Teacher = require("../models/teacherModels")
 
 const createCourse = async (newCourse) => {
   const {
@@ -139,11 +140,46 @@ const deleteCourse = async (id) =>{
   }
 
 }
+//assign 
+const assignTeacher = async (teacherId, courseId) =>{
+  try {
+    const course = await Course.findById(courseId)
+    if(!course){
+      return{
+        status: "ERR",
+        message:"can not find course"
+      }
+    }
 
+    const teacher = await Teacher.findById(teacherId);
+    if(!teacher){
+      return{
+        status: "ERR",
+        message:"can not find teacher"
+      }
+    }
+    course.giang_vien_phu_trach = teacher._id;
+    await course.save();
+    teacher.cac_lop_dang_day.push(course._id);
+    await teacher.save();
+    return{
+      status:"OK",
+      message: "assign Teacher successfully",
+      data: teacher
+    }
+    
+  } catch (error) {
+    return {
+      status: "ERR",
+      message: error.message,
+    };
+  }
+}
 module.exports = {
   createCourse,
   getAllCourse,
   detailCourse,
   updateCourse,
-  deleteCourse
+  deleteCourse,
+  assignTeacher
 };

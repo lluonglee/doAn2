@@ -14,22 +14,20 @@ const courseController = {
         tin_chi_ly_thuyet,
         tin_chi_thuc_hanh,
         tkb,
-        giang_vien_phu_trach,
       } = req.body;
       if (
-        (!subject ||
-          !ma_lop_hoc_phan ||
-          !si_so ||
-          !loai_mon_hoc ||
-          !so_tiet_truc_tiep ||
-          !so_tiet_tong ||
-          !tin_chi_ly_thuyet ||
-          !so_tiet_truc_tiep ||
-          !khoa_chuyen_mon ||
-          !tin_chi_thuc_hanh ||
-          !tkb ||
-          tkb.length === 0,
-        !giang_vien_phu_trach)
+        !subject ||
+        !ma_lop_hoc_phan ||
+        !si_so ||
+        !loai_mon_hoc ||
+        !so_tiet_truc_tiep ||
+        !so_tiet_tong ||
+        !tin_chi_ly_thuyet ||
+        !so_tiet_truc_tiep ||
+        !khoa_chuyen_mon ||
+        !tin_chi_thuc_hanh ||
+        !tkb ||
+        tkb.length === 0
       ) {
         return res.status(400).json({
           status: "ERR",
@@ -120,6 +118,18 @@ const courseController = {
       return res.status(404).json({
         status: "ERR",
         message: err.message,
+      });
+    }
+  },
+  //assignTeacher
+  assignTeacher: async (req, res) => {
+    const { teacherId, courseId } = req.body;
+    try {
+      const result = await CourseService.assignTeacher(teacherId, courseId);
+      res.status(200).json(result);
+    } catch (error) {
+      return res.status(404).json({
+        error: error.message,
       });
     }
   },
