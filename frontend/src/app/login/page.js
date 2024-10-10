@@ -28,10 +28,15 @@ export default function Login() {
       const data = await res.json();
 
       if (res.ok && !data.isAdmin) {
+        // Lưu access token vào localStorage
+        localStorage.setItem("accessToken", data.accessToken);
         router.push("/");
         console.log("Login successful! Token: " + data.accessToken); // accessToken
         console.log(data.isAdmin);
       } else if (res.ok && data.isAdmin) {
+        // Lưu access token vào localStorage
+        localStorage.setItem("accessToken", data.accessToken);
+        console.log("Login successful! Token: " + data.accessToken); // accessToken
         router.push("/admin");
       } else {
         setError(data.message || "Login failed.");

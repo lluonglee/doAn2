@@ -1,5 +1,4 @@
-import AdminLayout from "../layout";
-
+import Link from "next/link";
 export default function LopHoc() {
-  return <div> lop hoc</div>;
+  return <div>LopHoc</div>;
 }

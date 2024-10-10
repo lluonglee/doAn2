@@ -2,7 +2,7 @@ const teacherService = require("../services/teacherService");
 const Teacher = require("../models/teacherModels");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const  Blacklist= require("../models/blackListModel");
+const Blacklist = require("../models/blackListModel");
 
 const teacherController = {
   createTeacher: async (req, res) => {
@@ -57,7 +57,7 @@ const teacherController = {
       const teacher = await Teacher.findOne({ email: req.body.email });
       if (!teacher) {
         console.log("No teacher found with this email");
-        return res.status(404).json("wrong email!!");
+        return res.status(404).json({ message: "wrong email!!" });
       }
       console.log("Teacher found:", teacher);
 
@@ -67,7 +67,7 @@ const teacherController = {
       );
       if (!validPassword) {
         console.log("Invalid password");
-        return res.status(404).json("Wrong password");
+        return res.status(404).json({ message: "wrong password!!" });
       }
 
       if (teacher && validPassword) {
@@ -89,12 +89,11 @@ const teacherController = {
       return res.status(400).json({ message: "No token provided" });
     }
 
-    const accessToken = token.split(" ")[1]; 
+    const accessToken = token.split(" ")[1];
 
     try {
-      
       const decoded = jwt.decode(accessToken);
-      const expiration = new Date(decoded.exp * 1000); 
+      const expiration = new Date(decoded.exp * 1000);
 
       const blacklistedToken = new Blacklist({
         token: accessToken,

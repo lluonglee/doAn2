@@ -2,10 +2,11 @@
 import React, { useState } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css"; // Import Bootstrap icons
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 export default function Sidebar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const router = useRouter();
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -13,6 +14,30 @@ export default function Sidebar() {
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
+
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem("accessToken"); // Assuming token is stored in localStorage
+      const response = await fetch("http://localhost:5000/api/teacher/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        // Clear token from localStorage or any other storage
+        localStorage.removeItem("accessToken");
+        router.push("/login"); // Redirect to login page after successful logout
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (err) {
+      console.error("Error during logout:", err);
+    }
+  };
+
   return (
     <div className="sidebar w-1/5 relative">
       {/* Sidebar nội dung ở đây */}
@@ -93,10 +118,13 @@ export default function Sidebar() {
               </h1>
             </div>
           )}
-          <div className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white">
+          <div
+            className="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-600 text-white"
+            onClick={handleLogout}
+          >
             <i className="bi bi-box-arrow-in-right"></i>
             <span className="text-[15px] ml-4 text-gray-200 font-bold">
-              <Link href="/login">Logout</Link>
+              Logout
             </span>
           </div>
         </div>
