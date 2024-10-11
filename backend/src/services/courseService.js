@@ -1,18 +1,20 @@
 const Course = require("../models/courseModel");
 const Teacher = require("../models/teacherModels");
+const Department = require("../models/departmentModel");
 
 const createCourse = async (newCourse) => {
   const {
     subject,
+    department,
     ma_lop_hoc_phan,
     si_so,
-    khoa_chuyen_mon,
     so_tiet_truc_tiep,
     so_tiet_tong,
     loai_mon_hoc,
     tkb,
     giang_vien_phu_trach,
   } = newCourse;
+
   try {
     const existingCourse = await Course.findOne({ subject, ma_lop_hoc_phan });
     if (existingCourse) {
@@ -24,9 +26,9 @@ const createCourse = async (newCourse) => {
 
     const createCourse = await Course.create({
       subject,
+      department,
       ma_lop_hoc_phan,
       si_so,
-      khoa_chuyen_mon,
       so_tiet_truc_tiep,
       so_tiet_tong,
       loai_mon_hoc,
@@ -132,7 +134,7 @@ const deleteCourse = async (id) => {
     };
   }
 };
-//assign
+//assign Teacher
 const assignTeacher = async (teacherId, courseId) => {
   try {
     const course = await Course.findById(courseId);
@@ -166,6 +168,39 @@ const assignTeacher = async (teacherId, courseId) => {
     };
   }
 };
+
+const assignDepartment = async (departmentId, courseId) => {
+  try {
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return {
+        status: "ERR",
+        message: "can not find course",
+      };
+    }
+
+    const department = await Department.findById(departmentId);
+    if (!department) {
+      return {
+        status: "ERR",
+        message: "can not find Department",
+      };
+    }
+    course.department = department._id;
+    await course.save();
+
+    return {
+      status: "OK",
+      message: "assign  successfully",
+      data: course,
+    };
+  } catch (error) {
+    return {
+      status: "ERR",
+      message: error.message,
+    };
+  }
+};
 module.exports = {
   createCourse,
   getAllCourse,
@@ -173,4 +208,5 @@ module.exports = {
   updateCourse,
   deleteCourse,
   assignTeacher,
+  assignDepartment,
 };

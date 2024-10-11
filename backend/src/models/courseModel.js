@@ -4,9 +4,13 @@ const mongoose = require("mongoose");
 const courseSchema = new mongoose.Schema({
   subject: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Subject", // Tham chiếu đến Subject
-    required: true,
+    ref: "Subject", 
   },
+  department: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Department", 
+  }
+  ,
   ma_lop_hoc_phan: {
     type: String,
     required: true,
@@ -15,10 +19,7 @@ const courseSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  khoa_chuyen_mon: {
-    type: String,
-    required: true,
-  },
+  
   so_tiet_truc_tiep: {
     type: Number,
     required: true,

@@ -103,6 +103,10 @@ const departmentController = {
         });
       }
     },
+    assignDepartment: async (req, res)=>{
+      
+    },
+    
    
   };
   module.exports = departmentController;
