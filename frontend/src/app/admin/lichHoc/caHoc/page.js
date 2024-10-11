@@ -1,8 +1,15 @@
 "use client";
 import { Trash2 } from "lucide-react";
 import React from "react";
-
+import { useState } from "react";
+import ModalCaHoc from "./ModalCaHoc";
 export default function page() {
+  const [isOpen, setIsOpen] = useState(false);
+  // Hàm để mở modal
+  const openModal = () => setIsOpen(true);
+
+  // Hàm để đóng modal
+  const closeModal = () => setIsOpen(false);
   return (
     <div>
       <div>
@@ -61,6 +68,7 @@ export default function page() {
                   <a
                     href="#"
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    onClick={openModal}
                   >
                     Edit
                   </a>
@@ -81,6 +89,7 @@ export default function page() {
                   <a
                     href="#"
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    onClick={openModal}
                   >
                     Edit
                   </a>
@@ -101,6 +110,7 @@ export default function page() {
                   <a
                     href="#"
                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    onClick={openModal}
                   >
                     Edit
                   </a>
@@ -111,6 +121,8 @@ export default function page() {
           </table>
         </div>
       </div>
+      {/** gọi modal */}
+      {isOpen && <ModalCaHoc closeModal={closeModal} />}
     </div>
   );
 }
