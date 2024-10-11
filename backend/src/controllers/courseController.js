@@ -6,7 +6,6 @@ const courseController = {
       const {
         ma_lop_hoc_phan,
         si_so,
-        khoa_chuyen_mon,
         so_tiet_truc_tiep,
         so_tiet_tong,
         loai_mon_hoc,    
@@ -18,7 +17,6 @@ const courseController = {
         !loai_mon_hoc ||
         !so_tiet_truc_tiep ||
         !so_tiet_tong ||
-        !khoa_chuyen_mon ||
         !tkb ||
         tkb.length === 0
       ) {
@@ -119,6 +117,17 @@ const courseController = {
     const { teacherId, courseId } = req.body;
     try {
       const result = await CourseService.assignTeacher(teacherId, courseId);
+      res.status(200).json(result);
+    } catch (error) {
+      return res.status(404).json({
+        error: error.message,
+      });
+    }
+  },
+  assignDepartment: async (req, res) => {
+    const { departmentId, courseId } = req.body;
+    try {
+      const result = await CourseService.assignDepartment(departmentId, courseId);
       res.status(200).json(result);
     } catch (error) {
       return res.status(404).json({
