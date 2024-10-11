@@ -32,14 +32,6 @@ const courseSchema = new mongoose.Schema({
     enum: ["Lý thuyết", "Thực hành"],
     required: true,
   },
-  tin_chi_ly_thuyet: {
-    type: Number,
-    required: true,
-  },
-  tin_chi_thuc_hanh: {
-    type: Number,
-    required: true,
-  },
   tkb: [
     {
       thu: {

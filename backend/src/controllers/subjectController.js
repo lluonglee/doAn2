@@ -3,8 +3,20 @@ const SubjectService = require("../services/subjectService");
 const subjectController = {
   createSubject: async (req, res) => {
     try {
-      const { ma_mon, ten_mon,so_tin_chi,tin_chi_ly_thuyet,tin_chi_thuc_hanh } = req.body;
-      if (!ma_mon || !ten_mon  || !so_tin_chi  || !tin_chi_ly_thuyet  || !tin_chi_thuc_hanh) {
+      const {
+        ma_mon,
+        ten_mon,
+        so_tin_chi,
+        tin_chi_ly_thuyet,
+        tin_chi_thuc_hanh,
+      } = req.body;
+      if (
+        !ma_mon ||
+        !ten_mon ||
+        !so_tin_chi ||
+        !tin_chi_ly_thuyet ||
+        !tin_chi_thuc_hanh
+      ) {
         return res.status(400).json({
           status: "ERR",
           message: "the input is required",
@@ -94,6 +106,19 @@ const subjectController = {
       return res.status(404).json({
         status: "ERR",
         message: err.message,
+      });
+    }
+  },
+
+  //assign course
+  assignCourse: async (req, res) => {
+    const { subjectId, courseId } = req.body;
+    try {
+      const result = await SubjectService.assignCourse(subjectId, courseId);
+      res.status(200).json(result);
+    } catch (error) {
+      return res.status(404).json({
+        error: error.message,
       });
     }
   },

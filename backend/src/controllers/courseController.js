@@ -4,28 +4,21 @@ const courseController = {
   createCourse: async (req, res) => {
     try {
       const {
-        subject,
         ma_lop_hoc_phan,
         si_so,
         khoa_chuyen_mon,
         so_tiet_truc_tiep,
         so_tiet_tong,
-        loai_mon_hoc,
-        tin_chi_ly_thuyet,
-        tin_chi_thuc_hanh,
+        loai_mon_hoc,    
         tkb,
       } = req.body;
       if (
-        !subject ||
         !ma_lop_hoc_phan ||
         !si_so ||
         !loai_mon_hoc ||
         !so_tiet_truc_tiep ||
         !so_tiet_tong ||
-        !tin_chi_ly_thuyet ||
-        !so_tiet_truc_tiep ||
         !khoa_chuyen_mon ||
-        !tin_chi_thuc_hanh ||
         !tkb ||
         tkb.length === 0
       ) {
