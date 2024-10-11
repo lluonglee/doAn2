@@ -8,5 +8,4 @@ router.get("/detail-course/:id", courseController.getDetailCourse)
 router.put("/update-course/:id", courseController.updateCourse)
 router.delete("/delete-course/:id", courseController.deleteCourse)
 
-router.post("/assign-teacher", courseController.assignTeacher)
 module.exports = router

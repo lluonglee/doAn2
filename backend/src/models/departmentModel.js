@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 const departmentSchema = new mongoose.Schema({
+  ma_khoa:{
+    type: String,
+    required: true,
+  },
   ten_khoa: {
     type: String,
     required: true,
