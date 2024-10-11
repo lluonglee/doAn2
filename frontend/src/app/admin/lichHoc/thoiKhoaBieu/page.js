@@ -19,16 +19,16 @@ export default function page() {
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" class="px-6 py-3">
-                  Tên ca học
+                  Thứ - Ngày học
                 </th>
                 <th scope="col" class="px-6 py-3">
-                  Buổi
+                  Ca học
                 </th>
                 <th scope="col" class="px-6 py-3">
                   Thời gian
                 </th>
                 <th scope="col" class="px-6 py-3">
-                  Ghi chú
+                  Phòng
                 </th>
                 <th scope="col" class="px-6 py-3">
                   Thao tác

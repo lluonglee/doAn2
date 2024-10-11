@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const departmentSchema = new mongoose.Schema({
   ten_khoa: {
     type: String,
@@ -7,15 +7,15 @@ const departmentSchema = new mongoose.Schema({
   giang_vien_trong_khoa: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Teacher',
+      ref: "Teacher",
     },
   ],
   cac_mon_hoc: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Subject',
+      ref: "Subject",
     },
   ],
 });
 
-module.exports = mongoose.model('Department', departmentSchema);
+module.exports = mongoose.model("Department", departmentSchema);

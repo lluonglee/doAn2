@@ -1,141 +1,185 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 
 export default function ModalTKB({ closeModal }) {
-  const handleSubmit = (e) => {
-    // prevent reload page when submit
-    e.preventDefault();
-  };
-  return (
-    <div>
-      <div
-        id="crud-modal"
-        tabIndex="-1"
-        aria-hidden="true"
-        className="fixed inset-0 z-50 flex justify-center items-center w-full h-[calc(100%-1rem)] max-h-full overflow-y-auto overflow-x-hidden"
-      >
-        <div className="relative p-4 w-full max-w-md max-h-full">
-          <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            {/* Modal header */}
-            <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Create New Product
-              </h3>
-              <button
-                type="button"
-                onClick={closeModal}
-                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-              >
-                <svg
-                  className="w-3 h-3"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 14 14"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M1 1l6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                  />
-                </svg>
-                <span className="sr-only">Close modal</span>
-              </button>
-            </div>
+  const [subject, setSubject] = useState("");
+  const [subjectCode, setSubjectCode] = useState("");
+  const [teacher, setTeacher] = useState("");
+  const [day, setDay] = useState("");
+  const [lessonType, setLessonType] = useState("Lý thuyết");
+  const [lessonCount, setLessonCount] = useState(1);
+  const [timeOptions, setTimeOptions] = useState([]);
+  const [startTime, setStartTime] = useState("");
 
-            {/* Modal body */}
-            {/** if submit close modal */}
-            <form className="p-4 md:p-5" onSubmit={handleSubmit && closeModal}>
-              <div className="grid gap-4 mb-4 grid-cols-2">
-                <div className="col-span-2">
-                  <label
-                    htmlFor="name"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    id="name"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Type product name"
-                    required
-                  />
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <label
-                    htmlFor="price"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Price
-                  </label>
-                  <input
-                    type="number"
-                    name="price"
-                    id="price"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="$2999"
-                    required
-                  />
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <label
-                    htmlFor="category"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Category
-                  </label>
-                  <select
-                    id="category"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                  >
-                    <option value="" disabled>
-                      Select category
-                    </option>
-                    <option value="TV">TV/Monitors</option>
-                    <option value="PC">PC</option>
-                    <option value="GA">Gaming/Console</option>
-                    <option value="PH">Phones</option>
-                  </select>
-                </div>
-                <div className="col-span-2">
-                  <label
-                    htmlFor="description"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Product Description
-                  </label>
-                  <textarea
-                    id="description"
-                    rows="4"
-                    className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Write product description here"
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                <svg
-                  className="me-1 -ms-1 w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                Add new product
-              </button>
-            </form>
+  const subjects = {
+    TH1000: "Lập trình căn bản",
+    TH2000: "Cấu trúc dữ liệu",
+    // Add more subjects here
+  };
+
+  const handleSubjectChange = (e) => {
+    setSubject(e.target.value);
+    setSubjectCode(
+      Object.keys(subjects).find((key) => subjects[key] === e.target.value)
+    );
+  };
+
+  const handleLessonTypeChange = (e) => {
+    setLessonType(e.target.value);
+    setLessonCount(1);
+    setStartTime("");
+  };
+
+  const handleLessonCountChange = (e) => {
+    const count = parseInt(e.target.value);
+    setLessonCount(count);
+    updateTimeOptions(lessonType, count);
+  };
+
+  const updateTimeOptions = (type, count) => {
+    let options = [];
+    if (type === "Lý thuyết") {
+      if (count === 1) {
+        options = ["7:00", "7:40", "8:20", "9:00", "9:30"];
+      } else if (count === 2) {
+        options = ["7:00-8:20", "7:40-9:20", "8:20-10:00"];
+      }
+    } else {
+      if (count === 1) {
+        options = ["6:30", "8:40", "12:30", "15:20"];
+      } else if (count === 2) {
+        options = ["6:30-9:00", "12:30-15:00"];
+      }
+    }
+    setTimeOptions(options);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    closeModal();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md dark:bg-gray-800">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Sắp xếp thời khóa biểu
+        </h3>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Tên môn học (optional)
+            </label>
+            <select
+              value={subject}
+              onChange={handleSubjectChange}
+              className="mt-1 block w-full p-2 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white"
+            >
+              <option value="">Chọn môn học</option>
+              {Object.values(subjects).map((subj, index) => (
+                <option key={index} value={subj}>
+                  {subj}
+                </option>
+              ))}
+            </select>
           </div>
-        </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Mã môn học
+            </label>
+            <input
+              type="text"
+              value={subjectCode}
+              readOnly
+              className="mt-1 block w-full p-2 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Giảng viên (optional)
+            </label>
+            <input
+              type="text"
+              value={teacher}
+              onChange={(e) => setTeacher(e.target.value)}
+              className="mt-1 block w-full p-2 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Chọn thứ (optional)
+            </label>
+            <select
+              value={day}
+              onChange={(e) => setDay(e.target.value)}
+              className="mt-1 block w-full p-2 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white"
+            >
+              <option value="">Chọn thứ</option>
+              <option value="2">Thứ 2</option>
+              <option value="3">Thứ 3</option>
+              <option value="4">Thứ 4</option>
+              <option value="5">Thứ 5</option>
+              <option value="6">Thứ 6</option>
+              <option value="7">Thứ 7</option>
+              <option value="CN">Chủ Nhật</option>
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Loại tiết
+            </label>
+            <select
+              value={lessonType}
+              onChange={handleLessonTypeChange}
+              className="mt-1 block w-full p-2 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white"
+            >
+              <option value="Lý thuyết">Lý thuyết</option>
+              <option value="Thực hành">Thực hành</option>
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Số tiết
+            </label>
+            <input
+              type="number"
+              value={lessonCount}
+              min={lessonType === "Lý thuyết" ? 1 : 1}
+              max={lessonType === "Lý thuyết" ? 13 : 5}
+              onChange={handleLessonCountChange}
+              className="mt-1 block w-full p-2 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Giờ học
+            </label>
+            <select
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+              className="mt-1 block w-full p-2 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white"
+            >
+              <option value="">Chọn giờ học</option>
+              {timeOptions.map((time, index) => (
+                <option key={index} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700"
+          >
+            Lưu
+          </button>
+        </form>
+        <button
+          onClick={closeModal}
+          className="w-full mt-4 bg-gray-600 text-white p-2 rounded-lg hover:bg-gray-700"
+        >
+          Đóng
+        </button>
       </div>
     </div>
   );
