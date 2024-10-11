@@ -41,7 +41,7 @@ export default function page() {
                   scope="row"
                   class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  Apple MacBook Pro 17"
+                  Thứ 2
                 </th>
                 <td class="px-6 py-4">Silver</td>
                 <td class="px-6 py-4">Laptop</td>
@@ -62,7 +62,7 @@ export default function page() {
                   scope="row"
                   class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  Microsoft Surface Pro
+                  Thứ 3
                 </th>
                 <td class="px-6 py-4">White</td>
                 <td class="px-6 py-4">Laptop PC</td>
@@ -83,7 +83,91 @@ export default function page() {
                   scope="row"
                   class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                 >
-                  Magic Mouse 2
+                  Thức 4
+                </th>
+                <td class="px-6 py-4">Black</td>
+                <td class="px-6 py-4">Accessories</td>
+                <td class="px-6 py-4">$99</td>
+                <td class="px-6 py-4 flex gap-5 justify-center">
+                  <a
+                    href="#"
+                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    onClick={openModal}
+                  >
+                    Edit
+                  </a>
+                  <Trash2 className="cursor-pointer" />
+                </td>
+              </tr>
+              <tr class="bg-white dark:bg-gray-800">
+                <th
+                  scope="row"
+                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  Thứ 5
+                </th>
+                <td class="px-6 py-4">Black</td>
+                <td class="px-6 py-4">Accessories</td>
+                <td class="px-6 py-4">$99</td>
+                <td class="px-6 py-4 flex gap-5 justify-center">
+                  <a
+                    href="#"
+                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    onClick={openModal}
+                  >
+                    Edit
+                  </a>
+                  <Trash2 className="cursor-pointer" />
+                </td>
+              </tr>
+              <tr class="bg-white dark:bg-gray-800">
+                <th
+                  scope="row"
+                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  Thứ 6
+                </th>
+                <td class="px-6 py-4">Black</td>
+                <td class="px-6 py-4">Accessories</td>
+                <td class="px-6 py-4">$99</td>
+                <td class="px-6 py-4 flex gap-5 justify-center">
+                  <a
+                    href="#"
+                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    onClick={openModal}
+                  >
+                    Edit
+                  </a>
+                  <Trash2 className="cursor-pointer" />
+                </td>
+              </tr>
+              <tr class="bg-white dark:bg-gray-800">
+                <th
+                  scope="row"
+                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  Thứ 7
+                </th>
+                <td class="px-6 py-4">Black</td>
+                <td class="px-6 py-4">Accessories</td>
+                <td class="px-6 py-4">$99</td>
+                <td class="px-6 py-4 flex gap-5 justify-center">
+                  <a
+                    href="#"
+                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    onClick={openModal}
+                  >
+                    Edit
+                  </a>
+                  <Trash2 className="cursor-pointer" />
+                </td>
+              </tr>
+              <tr class="bg-white dark:bg-gray-800">
+                <th
+                  scope="row"
+                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  Chủ nhật
                 </th>
                 <td class="px-6 py-4">Black</td>
                 <td class="px-6 py-4">Accessories</td>

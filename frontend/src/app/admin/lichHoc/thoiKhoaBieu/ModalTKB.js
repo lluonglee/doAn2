@@ -5,6 +5,7 @@ export default function ModalTKB({ closeModal }) {
   const [subject, setSubject] = useState("");
   const [subjectCode, setSubjectCode] = useState("");
   const [teacher, setTeacher] = useState("");
+  const [teacherCode, setTeacherCode] = useState("");
   const [day, setDay] = useState("");
   const [lessonType, setLessonType] = useState("Lý thuyết");
   const [lessonCount, setLessonCount] = useState(1);
@@ -17,10 +18,22 @@ export default function ModalTKB({ closeModal }) {
     // Add more subjects here
   };
 
+  const teachers = {
+    GV01: "Nguyễn văn A",
+    GV02: " Nguyễn thị b",
+  };
+
   const handleSubjectChange = (e) => {
     setSubject(e.target.value);
     setSubjectCode(
       Object.keys(subjects).find((key) => subjects[key] === e.target.value)
+    );
+  };
+
+  const handleTeacherChange = (e) => {
+    setTeacher(e.target.value);
+    setTeacherCode(
+      Object.keys(teachers).find((key) => teachers[key] === e.target.value)
     );
   };
 
@@ -94,17 +107,7 @@ export default function ModalTKB({ closeModal }) {
               className="mt-1 block w-full p-2 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Giảng viên (optional)
-            </label>
-            <input
-              type="text"
-              value={teacher}
-              onChange={(e) => setTeacher(e.target.value)}
-              className="mt-1 block w-full p-2 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white"
-            />
-          </div>
+
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Chọn thứ (optional)
@@ -183,4 +186,24 @@ export default function ModalTKB({ closeModal }) {
       </div>
     </div>
   );
+}
+{
+  /**
+     <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Tên giảng viên (optional)
+            </label>
+            <select
+              value={teacher}
+              onChange={handleTeacherChange}
+              className="mt-1 block w-full p-2 bg-gray-50 border border-gray-300 rounded-lg dark:bg-gray-700 dark:text-white"
+            >
+              <option value="">Chọn tên giảng viên</option>
+              {Object.values(teachers).map((t, index) => (
+                <option key={index} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div> */
 }
