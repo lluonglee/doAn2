@@ -111,7 +111,7 @@ export default function Sidebar() {
                 <Link href="/admin/lopHoc">Lớp học</Link>
               </h1>
               <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
-                <Link href="/admin/hocVien">Học viên</Link>
+                <Link href="/admin/giangVien">Giảng viên</Link>
               </h1>
               <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
                 <Link href="/admin/lichHoc">Lịch học</Link>

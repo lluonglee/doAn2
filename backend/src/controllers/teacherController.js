@@ -7,10 +7,10 @@ const Blacklist = require("../models/blackListModel");
 const teacherController = {
   createTeacher: async (req, res) => {
     try {
-      const { ten, email, password, confirmPassword } = req.body;
+      const { email } = req.body;
       const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
       const isEmailValid = emailRegex.test(email);
-      if (!email || !password || !confirmPassword) {
+      if (!email) {
         return res.status(400).json({
           status: "ERR",
           message: "The input is required",
@@ -21,13 +21,6 @@ const teacherController = {
         return res.status(400).json({
           status: "ERR",
           message: "Invalid email format",
-        });
-      }
-
-      if (password !== confirmPassword) {
-        return res.status(400).json({
-          status: "ERR",
-          message: "Password do not match",
         });
       }
 
@@ -44,11 +37,11 @@ const teacherController = {
   generateAccessToken: (teacher) => {
     return jwt.sign(
       {
-        id: teacher._id, 
+        id: teacher._id,
         admin: teacher.isAdmin,
       },
       process.env.JWT_ACCESS_KEY,
-      { expiresIn: "50s" }
+      { expiresIn: "5000s" }
     );
   },
   loginTeacher: async (req, res) => {

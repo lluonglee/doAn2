@@ -10,7 +10,7 @@ const app = express();
 
 mongoose
   //.connect(process.env.MONGODB_CONNECT)
-  .connect(process.env.MONGODB_CONNECTION)
+  .connect(process.env.MONGODB_CONNECT)
   .then(() => {
     console.log("Connect to database");
   })
