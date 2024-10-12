@@ -160,7 +160,7 @@ export default function ModalGiangVien({ closeModal }) {
                       Chọn khoa
                     </option>
                     {departments.map((department) => (
-                      <option key={department._id} value={department._id}>
+                      <option key={department._id} value={department.ten_khoa}>
                         {department.ten_khoa}{" "}
                         {/* Render tên khoa từ department */}
                       </option>
