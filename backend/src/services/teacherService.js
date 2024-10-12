@@ -2,7 +2,14 @@ const bcrypt = require("bcrypt");
 const Teacher = require("../models/teacherModels");
 //create teacher
 const createTeacher = async (newTeacher) => {
-  const { ten, email, password = "1234", cac_lop_dang_day } = newTeacher;
+  const {
+    ten,
+    email,
+    password = "1234",
+    khoa_chuyen_mon,
+    ghi_chu,
+    cac_lop_dang_day,
+  } = newTeacher;
   try {
     const existingTeacher = await Teacher.findOne({ email });
     if (existingTeacher) {
@@ -17,6 +24,8 @@ const createTeacher = async (newTeacher) => {
       ten,
       email,
       password: hashedPassword,
+      khoa_chuyen_mon,
+      ghi_chu,
       cac_lop_dang_day,
     });
 

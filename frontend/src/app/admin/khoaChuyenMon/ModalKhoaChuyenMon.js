@@ -1,65 +1,44 @@
-"use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-export default function ModalGiangVien({ closeModal }) {
+export default function ModalKhoaChuyenMon({ closeModal }) {
   const [formData, setFormData] = useState({
-    ten: "",
-    email: "",
-    khoa_chuyen_mon: "",
+    ma_khoa: "",
+    ten_khoa: "",
     ghi_chu: "",
   });
-
-  const [departments, setDepartments] = useState([]); // State để lưu danh sách khoa
-
-  // Fetch danh sách khoa từ API
-  const fetchDepartments = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/department/get-all");
-      const data = await res.json();
-      if (res.ok) {
-        setDepartments(data.data); // Giả sử data là mảng các khoa
-      } else {
-        console.error("Error fetching departments:", data.message);
-      }
-    } catch (error) {
-      console.error("Failed to fetch departments:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchDepartments(); // Gọi hàm fetchDepartments khi modal mở
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const res = await fetch("http://localhost:5000/api/teacher/sign-up", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData), // Send form data as JSON
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        closeModal(); // Đóng modal trên thành công
-        setTimeout(() => {
-          alert("Teacher added successfully!");
-        }, 100); // Delay để đảm bảo modal đóng trước
-      } else {
-        alert("Failed to add teacher: " + data.message);
-      }
-    } catch (error) {
-      console.error("Failed to add teacher:", error);
-      alert("Failed to add teacher");
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Call API to create department here
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/department/create-department",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await response.json();
+      if (data.status === "OK") {
+        alert("Department added successfully!");
+        closeModal(); // Close the modal on success
+      } else {
+        alert("Failed to add department: " + data.message);
+      }
+    } catch (error) {
+      console.error("Error adding department:", error);
+      alert("Failed to add department");
+    }
   };
 
   return (
@@ -75,7 +54,7 @@ export default function ModalGiangVien({ closeModal }) {
             {/* Modal header */}
             <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Thêm giảng viên mới
+                Thêm mới Khoa
               </h3>
               <button
                 type="button"
@@ -106,92 +85,63 @@ export default function ModalGiangVien({ closeModal }) {
               <div className="grid gap-4 mb-4 grid-cols-2">
                 <div className="col-span-2">
                   <label
-                    htmlFor="tenGiangVien"
+                    htmlFor="ma_khoa"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Tên giảng viên
+                    Mã Khoa
                   </label>
                   <input
                     type="text"
-                    name="ten"
-                    id="tenGiangVien"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Nhập tên giảng viên"
-                    required
-                    value={formData.ten}
+                    name="ma_khoa"
+                    id="ma_khoa"
+                    value={formData.ma_khoa}
                     onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    placeholder="Nhập mã khoa"
+                    required
                   />
                 </div>
-
                 <div className="col-span-2">
                   <label
-                    htmlFor="email"
+                    htmlFor="ten_khoa"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Email
+                    Tên Khoa
                   </label>
                   <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Nhập email"
-                    required
-                    value={formData.email}
+                    type="text"
+                    name="ten_khoa"
+                    id="ten_khoa"
+                    value={formData.ten_khoa}
                     onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    placeholder="Nhập tên khoa"
+                    required
                   />
                 </div>
-
                 <div className="col-span-2">
                   <label
-                    htmlFor="khoaChuyenMon"
+                    htmlFor="ghi_chu"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Khoa chuyên môn (Tùy chọn)
-                  </label>
-                  <select
-                    name="khoa_chuyen_mon"
-                    id="khoaChuyenMon"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    value={formData.khoa_chuyen_mon}
-                    onChange={handleChange}
-                  >
-                    <option value="" disabled>
-                      Chọn khoa
-                    </option>
-                    {departments.map((department) => (
-                      <option key={department._id} value={department._id}>
-                        {department.ten_khoa}{" "}
-                        {/* Render tên khoa từ department */}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="col-span-2">
-                  <label
-                    htmlFor="ghiChu"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Ghi chú
+                    Ghi Chú
                   </label>
                   <textarea
                     name="ghi_chu"
-                    id="ghiChu"
+                    id="ghi_chu"
                     rows="4"
-                    className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Nhập ghi chú"
                     value={formData.ghi_chu}
                     onChange={handleChange}
+                    className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    placeholder="Viết ghi chú ở đây"
                   />
                 </div>
               </div>
-
               <button
                 type="submit"
                 className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Thêm mới
+                Thêm mới Khoa
               </button>
             </form>
           </div>

@@ -1,7 +1,7 @@
 const Department = require("../models/departmentModel");
 
 const createDepartment = async (newDepartment) => {
-  const { ma_khoa, ten_khoa } = newDepartment;
+  const { ma_khoa, ten_khoa, ghi_chu } = newDepartment;
   try {
     const existingDepart = await Department.findOne({ ma_khoa });
     if (existingDepart) {
@@ -14,6 +14,7 @@ const createDepartment = async (newDepartment) => {
     const createDepartment = await Department.create({
       ma_khoa,
       ten_khoa,
+      ghi_chu,
     });
 
     return {

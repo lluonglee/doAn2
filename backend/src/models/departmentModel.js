@@ -1,12 +1,15 @@
 const mongoose = require("mongoose");
 const departmentSchema = new mongoose.Schema({
-  ma_khoa:{
+  ma_khoa: {
     type: String,
     required: true,
   },
   ten_khoa: {
     type: String,
     required: true,
+  },
+  ghi_chu: {
+    type: String,
   },
   giang_vien_trong_khoa: [
     {
