@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-export default function ModalGiangVien({ closeModal }) {
+export default function ModalGiangVien({ closeModal, teacher }) {
   const [formData, setFormData] = useState({
     ten: "",
     email: "",
@@ -9,7 +9,7 @@ export default function ModalGiangVien({ closeModal }) {
     ghi_chu: "",
   });
 
-  const [departments, setDepartments] = useState([]); // State để lưu danh sách khoa
+  const [departments, setDepartments] = useState([]);
 
   // Fetch danh sách khoa từ API
   const fetchDepartments = async () => {
@@ -17,7 +17,7 @@ export default function ModalGiangVien({ closeModal }) {
       const res = await fetch("http://localhost:5000/api/department/get-all");
       const data = await res.json();
       if (res.ok) {
-        setDepartments(data.data); // Giả sử data là mảng các khoa
+        setDepartments(data.data);
       } else {
         console.error("Error fetching departments:", data.message);
       }
@@ -27,33 +27,55 @@ export default function ModalGiangVien({ closeModal }) {
   };
 
   useEffect(() => {
-    fetchDepartments(); // Gọi hàm fetchDepartments khi modal mở
-  }, []);
+    fetchDepartments();
+
+    if (teacher) {
+      // Nếu có teacher, điền dữ liệu vào form (chế độ update)
+      setFormData({
+        ten: teacher.ten || "",
+        email: teacher.email || "",
+        khoa_chuyen_mon: teacher.khoa_chuyen_mon || "",
+        ghi_chu: teacher.ghi_chu || "",
+      });
+    }
+  }, [teacher]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/api/teacher/sign-up", {
-        method: "POST",
+      const url = teacher
+        ? `http://localhost:5000/api/teacher/update-teacher/${teacher._id}` // Update nếu có teacher
+        : "http://localhost:5000/api/teacher/sign-up"; // Thêm mới nếu không có teacher
+
+      const method = teacher ? "PUT" : "POST"; // Update dùng PUT, thêm mới dùng POST
+
+      const res = await fetch(url, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData), // Send form data as JSON
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
       if (data.success) {
-        closeModal(); // Đóng modal trên thành công
+        closeModal();
         setTimeout(() => {
-          alert("Teacher added successfully!");
-        }, 100); // Delay để đảm bảo modal đóng trước
+          alert(
+            teacher
+              ? "Teacher updated successfully!"
+              : "Teacher added successfully!"
+          );
+        }, 100);
       } else {
-        alert("Failed to add teacher: " + data.message);
+        alert(
+          `Failed to ${teacher ? "update" : "add"} teacher: ${data.message}`
+        );
       }
     } catch (error) {
-      console.error("Failed to add teacher:", error);
-      alert("Failed to add teacher");
+      console.error(`Failed to ${teacher ? "update" : "add"} teacher:`, error);
+      alert(`Failed to ${teacher ? "update" : "add"} teacher`);
     }
   };
 
@@ -72,10 +94,9 @@ export default function ModalGiangVien({ closeModal }) {
       >
         <div className="relative p-4 w-full max-w-md max-h-full">
           <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            {/* Modal header */}
             <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Thêm giảng viên mới
+                {teacher ? "Chỉnh sửa giảng viên" : "Thêm giảng viên mới"}
               </h3>
               <button
                 type="button"
@@ -84,115 +105,95 @@ export default function ModalGiangVien({ closeModal }) {
               >
                 <svg
                   className="w-3 h-3"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
                   fill="none"
-                  viewBox="0 0 14 14"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    stroke="currentColor"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2"
-                    d="M1 1l6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                  />
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
                 </svg>
-                <span className="sr-only">Close modal</span>
               </button>
             </div>
-
-            {/* Modal body */}
-            <form className="p-4 md:p-5" onSubmit={handleSubmit}>
-              <div className="grid gap-4 mb-4 grid-cols-2">
-                <div className="col-span-2">
-                  <label
-                    htmlFor="tenGiangVien"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
+            <form onSubmit={handleSubmit}>
+              <div className="p-6 space-y-6">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Tên giảng viên
                   </label>
                   <input
                     type="text"
                     name="ten"
-                    id="tenGiangVien"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Nhập tên giảng viên"
-                    required
                     value={formData.ten}
                     onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                    required
                   />
                 </div>
-
-                <div className="col-span-2">
-                  <label
-                    htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Email
                   </label>
                   <input
                     type="email"
                     name="email"
-                    id="email"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Nhập email"
-                    required
                     value={formData.email}
                     onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                    required
                   />
                 </div>
-
-                <div className="col-span-2">
-                  <label
-                    htmlFor="khoaChuyenMon"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Khoa chuyên môn (Tùy chọn)
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Khoa chuyên môn
                   </label>
                   <select
                     name="khoa_chuyen_mon"
-                    id="khoaChuyenMon"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     value={formData.khoa_chuyen_mon}
                     onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                    required
                   >
-                    <option value="" disabled>
-                      Chọn khoa
-                    </option>
+                    <option value="">Chọn khoa</option>
                     {departments.map((department) => (
                       <option key={department._id} value={department.ten_khoa}>
-                        {department.ten_khoa}{" "}
-                        {/* Render tên khoa từ department */}
+                        {department.ten_khoa}
                       </option>
                     ))}
                   </select>
                 </div>
-
-                <div className="col-span-2">
-                  <label
-                    htmlFor="ghiChu"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Ghi chú
                   </label>
                   <textarea
                     name="ghi_chu"
-                    id="ghiChu"
-                    rows="4"
-                    className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Nhập ghi chú"
                     value={formData.ghi_chu}
                     onChange={handleChange}
-                  />
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                    rows="4"
+                  ></textarea>
                 </div>
               </div>
-
-              <button
-                type="submit"
-                className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              >
-                Thêm mới
-              </button>
+              <div className="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button
+                  type="submit"
+                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                >
+                  {teacher ? "Cập nhật" : "Thêm mới"}
+                </button>
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                >
+                  Hủy bỏ
+                </button>
+              </div>
             </form>
           </div>
         </div>

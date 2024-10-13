@@ -6,9 +6,19 @@ import ModalGiangVien from "./ModalGiangVien";
 export default function GiangVien() {
   const [isOpen, setIsOpen] = useState(false);
   const [teachers, setTeachers] = useState([]); // State to hold teachers data
+  const [selectedTeacher, setSelectedTeacher] = useState(null); // State to hold the selected teacher for edit
 
   // Hàm để mở modal
-  const openModal = () => setIsOpen(true);
+  const openModal = () => {
+    setSelectedTeacher(null); // Khi thêm mới, xóa dữ liệu giảng viên được chọn
+    setIsOpen(true);
+  };
+
+  // Hàm để mở modal cho Edit
+  const openEditModal = (teacher) => {
+    setSelectedTeacher(teacher); // Lưu giảng viên được chọn
+    setIsOpen(true); // Mở modal
+  };
 
   // Hàm để đóng modal
   const closeModal = () => setIsOpen(false);
@@ -43,12 +53,6 @@ export default function GiangVien() {
             onClick={openModal}
           >
             Thêm mới
-          </button>
-          <button
-            type="button"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-          >
-            Tìm kiếm
           </button>
         </div>
       </div>
@@ -94,7 +98,7 @@ export default function GiangVien() {
                     <a
                       href="#"
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                      onClick={openModal}
+                      onClick={() => openEditModal(teacher)} // Mở modal cho Edit
                     >
                       Edit
                     </a>
@@ -106,8 +110,14 @@ export default function GiangVien() {
           </table>
         </div>
       </div>
+
       {/* Gọi modal */}
-      {isOpen && <ModalGiangVien closeModal={closeModal} />}
+      {isOpen && (
+        <ModalGiangVien
+          closeModal={closeModal}
+          teacher={selectedTeacher} // Truyền thông tin giảng viên cho modal nếu có
+        />
+      )}
     </div>
   );
 }
