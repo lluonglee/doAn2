@@ -3,7 +3,7 @@ import { Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import ModalLopHocPhan from "./ModalLopHocPhan";
 
-export default function GiangVien() {
+export default function LopHocPhan() {
   const [isOpen, setIsOpen] = useState(false);
   const [courses, setCourses] = useState([]); // State to hold courses data
   const [selectedCourse, setSelectedCourse] = useState(null); // State to hold selected course for editing

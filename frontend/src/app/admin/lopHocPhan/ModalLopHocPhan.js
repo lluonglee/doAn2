@@ -11,25 +11,6 @@ export default function ModalLopHocPhan({ closeModal }) {
     tkb: [{ thu: "", tiet: "", gio: "" }],
   });
 
-  const [courses, setCourses] = useState([]);
-
-  // Fetch danh sách khoa từ API
-  const fetchCourses = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/api/department/get-all");
-      const data = await res.json();
-      if (res.ok) {
-        setDepartments(data.data);
-        console.error("Error fetching departments:", data.message);
-      }
-    } catch (error) {
-      console.error("Failed to fetch departments:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchCourses(); // Gọi hàm fetchDepartments khi modal mở
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
