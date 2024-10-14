@@ -99,13 +99,13 @@ export default function Sidebar() {
               id="submenu"
             >
               <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
-                <Link href="/admin/danhMuc">Danh mục</Link>
+                <Link href="/admin/monHoc">Môn học</Link>
               </h1>
               <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
                 <Link href="/admin/daoTao">Chương trình đào tạo</Link>
               </h1>
               <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
-                <Link href="/admin/capDo">Cấp độ</Link>
+                <Link href="/admin/lopHocPhan">Lớp học phần</Link>
               </h1>
               <h1 className="cursor-pointer p-2 hover:bg-blue-600 rounded-md mt-1">
                 <Link href="/admin/khoaChuyenMon">Khoa chuyên môn</Link>

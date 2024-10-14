@@ -2,7 +2,7 @@
 import React from "react";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
-import ModalTKB from "./modalTKB";
+import ModalTKB from "./ModalTKB";
 export default function page() {
   const [isOpen, setIsOpen] = useState(false);
   // Hàm để mở modal
