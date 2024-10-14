@@ -1,4 +1,4 @@
-const DepartmentService = require("../services/departmentService")
+const semesterService = require("../services/semesterService")
 
 const departmentController = {
     createDepartment: async (req, res) => {
