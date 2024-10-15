@@ -5,31 +5,29 @@ import ModalGiangVien from "./ModalGiangVien";
 
 export default function GiangVien() {
   const [isOpen, setIsOpen] = useState(false);
-  const [teachers, setTeachers] = useState([]); // State to hold teachers data
-  const [selectedTeacher, setSelectedTeacher] = useState(null); // State to hold the selected teacher for edit
+  const [teachers, setTeachers] = useState([]);
+  const [selectedTeacher, setSelectedTeacher] = useState(null);
+  const [isDelete, setDelete] = useState(false);
 
-  // Hàm để mở modal
   const openModal = () => {
-    setSelectedTeacher(null); // Khi thêm mới, xóa dữ liệu giảng viên được chọn
+    setSelectedTeacher(null);
     setIsOpen(true);
   };
 
-  // Hàm để mở modal cho Edit
   const openEditModal = (teacher) => {
-    setSelectedTeacher(teacher); // Lưu giảng viên được chọn
-    setIsOpen(true); // Mở modal
+    setSelectedTeacher(teacher);
+    setIsOpen(true);
   };
 
-  // Hàm để đóng modal
   const closeModal = () => setIsOpen(false);
 
-  // Fetch teachers data from the backend
+  // Hàm fetch danh sách giảng viên từ backend
   const fetchTeachers = async () => {
     try {
       const res = await fetch("http://localhost:5000/api/teacher/get-all");
       const data = await res.json();
       if (data.status === "OK") {
-        setTeachers(data.data); // Assuming data.data contains the array of teachers
+        setTeachers(data.data);
       } else {
         console.error("Failed to fetch teachers:", data.message);
       }
@@ -38,9 +36,34 @@ export default function GiangVien() {
     }
   };
 
+  // Hàm xóa giảng viên
+  const deleteTeacher = async (id) => {
+    if (confirm("Bạn có chắc chắn muốn xóa giảng viên này không?")) {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/teacher/delete-teacher/${id}`,
+          {
+            method: "DELETE",
+          }
+        );
+        const data = await res.json();
+        if (data.success) {
+          setTeachers(teachers.filter((teacher) => teacher._id !== id)); // Cập nhật lại danh sách sau khi xóa
+
+          console.log(isDelete);
+          alert("Giảng viên đã được xóa thành công!");
+        } else {
+          console.error("Failed to delete teacher:", data.message);
+        }
+      } catch (error) {
+        console.error("Error deleting teacher:", error);
+      }
+    }
+  };
+
   useEffect(() => {
-    fetchTeachers(); // Call the function to fetch teachers on component mount
-  }, [isOpen]);
+    fetchTeachers();
+  }, [isOpen, isDelete]);
 
   return (
     <div>
@@ -98,11 +121,17 @@ export default function GiangVien() {
                     <a
                       href="#"
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                      onClick={() => openEditModal(teacher)} // Mở modal cho Edit
+                      onClick={() => openEditModal(teacher)}
                     >
                       Edit
                     </a>
-                    <Trash2 className="cursor-pointer" />
+                    <Trash2
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setDelete(!isDelete);
+                        return deleteTeacher(teacher._id);
+                      }} // Thêm sự kiện xóa
+                    />
                   </td>
                 </tr>
               ))}
@@ -111,12 +140,8 @@ export default function GiangVien() {
         </div>
       </div>
 
-      {/* Gọi modal */}
       {isOpen && (
-        <ModalGiangVien
-          closeModal={closeModal}
-          teacher={selectedTeacher} // Truyền thông tin giảng viên cho modal nếu có
-        />
+        <ModalGiangVien closeModal={closeModal} teacher={selectedTeacher} />
       )}
     </div>
   );
