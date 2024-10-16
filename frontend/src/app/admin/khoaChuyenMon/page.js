@@ -6,16 +6,19 @@ import Link from "next/link";
 
 export default function KhoaChuyenMon() {
   const [isOpen, setIsOpen] = useState(false);
-  const [departments, setDepartments] = useState([]); // State to store departments
-
-  // Hàm để mở modal
-  const openModal = () => {
+  const [departments, setDepartments] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState(null); // State to store selected department for editing
+  const [isDelete, setDelete] = useState(false);
+  // Hàm để mở modal (for creating or updating)
+  const openModal = (department = null) => {
+    setSelectedDepartment(department); // Set the selected department if editing, or null if creating
     setIsOpen(true);
   };
 
   // Hàm để đóng modal
   const closeModal = () => {
     setIsOpen(false);
+    setSelectedDepartment(null); // Reset the selected department
   };
 
   // Fetch departments from API
@@ -26,19 +29,40 @@ export default function KhoaChuyenMon() {
       );
       const data = await response.json();
       if (response.ok) {
-        setDepartments(data.data); // Update state with fetched departments
+        setDepartments(data.data);
       } else {
-        console.error(data.message); // Handle error
+        console.error(data.message);
       }
     } catch (error) {
       console.error("Error fetching departments:", error);
     }
   };
 
-  // Use useEffect to fetch departments when modal is opened
+  // Function to handle delete
+  const deleteDepartment = async (id) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/department/delete-department/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      const data = await response.json();
+      if (data.status === "OK") {
+        alert("Department deleted successfully");
+        fetchDepartments(); // Refetch departments after deletion
+      } else {
+        alert("Failed to delete department: " + data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting department:", error);
+      alert("Failed to delete department");
+    }
+  };
+
   useEffect(() => {
-    fetchDepartments(); // Fetch departments when modal opens
-  }, [isOpen]); // Dependency array includes isOpen
+    fetchDepartments(); // Fetch departments when component mounts or modal closes
+  }, [isOpen, isDelete]);
 
   return (
     <div>
@@ -48,7 +72,7 @@ export default function KhoaChuyenMon() {
           <button
             type="button"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-            onClick={openModal}
+            onClick={() => openModal()} // Open modal with no department selected for creating
           >
             Thêm mới
           </button>
@@ -106,11 +130,17 @@ export default function KhoaChuyenMon() {
                     <a
                       href="#"
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                      onClick={openModal}
+                      onClick={() => openModal(department)} // Pass department to edit
                     >
                       Edit
                     </a>
-                    <Trash2 className="cursor-pointer" />
+                    <Trash2
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setDelete(!isDelete);
+                        return deleteDepartment(department._id);
+                      }} // Handle delete
+                    />
                   </td>
                 </tr>
               ))}
@@ -118,8 +148,13 @@ export default function KhoaChuyenMon() {
           </table>
         </div>
       </div>
-      {/** gọi modal */}
-      {isOpen && <ModalKhoaChuyenMon closeModal={closeModal} />}
+
+      {isOpen && (
+        <ModalKhoaChuyenMon
+          closeModal={closeModal}
+          department={selectedDepartment} // Pass selected department to modal
+        />
+      )}
     </div>
   );
 }

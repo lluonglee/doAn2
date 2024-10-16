@@ -1,11 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function ModalKhoaChuyenMon({ closeModal }) {
+export default function ModalKhoaChuyenMon({ closeModal, department }) {
   const [formData, setFormData] = useState({
     ma_khoa: "",
     ten_khoa: "",
     ghi_chu: "",
   });
+
+  // Pre-fill the form if editing
+  useEffect(() => {
+    if (department) {
+      setFormData({
+        ma_khoa: department.ma_khoa,
+        ten_khoa: department.ten_khoa,
+        ghi_chu: department.ghi_chu || "",
+      });
+    }
+  }, [department]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,30 +25,34 @@ export default function ModalKhoaChuyenMon({ closeModal }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const url = department
+      ? `http://localhost:5000/api/department/update-department/${department._id}`
+      : "http://localhost:5000/api/department/create-department";
+    const method = department ? "PUT" : "POST";
 
-    // Call API to create department here
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/department/create-department",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
       const data = await response.json();
       if (data.status === "OK") {
-        alert("Department added successfully!");
+        alert(
+          department
+            ? "Department updated successfully!"
+            : "Department added successfully!"
+        );
         closeModal(); // Close the modal on success
       } else {
-        alert("Failed to add department: " + data.message);
+        alert("Failed to save department: " + data.message);
       }
     } catch (error) {
-      console.error("Error adding department:", error);
-      alert("Failed to add department");
+      console.error("Error saving department:", error);
+      alert("Failed to save department");
     }
   };
 
@@ -54,7 +69,7 @@ export default function ModalKhoaChuyenMon({ closeModal }) {
             {/* Modal header */}
             <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Thêm mới Khoa
+                {department ? "Sửa Khoa" : "Thêm mới Khoa"}
               </h3>
               <button
                 type="button"
@@ -141,7 +156,7 @@ export default function ModalKhoaChuyenMon({ closeModal }) {
                 type="submit"
                 className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Thêm mới Khoa
+                {department ? "Lưu thay đổi" : "Thêm mới Khoa"}
               </button>
             </form>
           </div>
