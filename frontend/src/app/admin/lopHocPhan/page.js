@@ -5,12 +5,12 @@ import ModalLopHocPhan from "./ModalLopHocPhan";
 
 export default function LopHocPhan() {
   const [isOpen, setIsOpen] = useState(false);
-  const [courses, setCourses] = useState([]); // State to hold courses data
-  const [selectedCourse, setSelectedCourse] = useState(null); // State to hold selected course for editing
-
+  const [courses, setCourses] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [isDelete, setDelete] = useState(false);
   // Hàm để mở modal
   const openModal = (course = null) => {
-    setSelectedCourse(course); // Set the course data if editing, or null if adding new
+    setSelectedCourse(course);
     setIsOpen(true);
   };
 
@@ -23,7 +23,7 @@ export default function LopHocPhan() {
       const res = await fetch("http://localhost:5000/api/course/get-all");
       const data = await res.json();
       if (data.status === "OK") {
-        setCourses(data.data); // Assuming data.data contains the array of courses
+        setCourses(data.data);
       } else {
         console.error("Failed to fetch Courses:", data.message);
       }
@@ -34,7 +34,34 @@ export default function LopHocPhan() {
 
   useEffect(() => {
     fetchCourses(); // Fetch courses on component mount
-  }, [isOpen]); // Re-fetch when modal is closed
+  }, [isOpen, isDelete]); // Re-fetch when modal is closed
+
+  // Function to delete a course
+  const deleteCourse = async (courseId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this course?"
+    );
+    if (confirmDelete) {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/course/delete-course/${courseId}`,
+          {
+            method: "DELETE",
+          }
+        );
+        const data = await response.json();
+        if (data.status === "OK") {
+          alert("Course deleted successfully!");
+          fetchCourses(); // Refresh the courses list
+        } else {
+          alert("Failed to delete course: " + data.message);
+        }
+      } catch (error) {
+        console.error("Error deleting course:", error);
+        alert("Failed to delete course.");
+      }
+    }
+  };
 
   // Helper function to format TKB (Thời khóa biểu)
   const formatTkb = (tkb) => {
@@ -118,7 +145,13 @@ export default function LopHocPhan() {
                     >
                       Edit
                     </a>
-                    <Trash2 className="cursor-pointer" />
+                    <Trash2
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setDelete(!isDelete);
+                        return deleteCourse(course._id);
+                      }} // Call delete function
+                    />
                   </td>
                 </tr>
               ))}
@@ -128,7 +161,9 @@ export default function LopHocPhan() {
       </div>
 
       {/* Gọi modal */}
-      {isOpen && <ModalLopHocPhan closeModal={closeModal} course={selectedCourse} />}
+      {isOpen && (
+        <ModalLopHocPhan closeModal={closeModal} course={selectedCourse} />
+      )}
     </div>
   );
 }
