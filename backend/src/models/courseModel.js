@@ -35,7 +35,7 @@ const courseSchema = new mongoose.Schema({
   },
   hoc_ky: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Semester",  // Tham chiếu đến học kỳ
+    ref: "Semester",  // Tham chiếu đến học kỳ(làm xog r)
   },
   tkb: [
     {

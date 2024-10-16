@@ -5,10 +5,15 @@ export default function ModalNam({ closeModal }) {
   const [formData, setFormData] = useState({
     semesterId: "",
     courseId: "",
+    subjectId: "",
+    departmentId: ""
   });
 
   const [semesters, setSemester] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [subjects, setSubject] = useState([])
+  const [departments, setDepartment] = useState([])
+  
   useEffect(() => {
     // Gọi API để lấy danh sách giáo viên
     const fetchSemester = async () => {
@@ -31,43 +36,110 @@ export default function ModalNam({ closeModal }) {
       }
     };
 
+    const fetchSubject = async () =>{
+      try {
+        const res = await fetch("http://localhost:5000/api/subject/getAll-subject"); // API courses
+        const data = await res.json();
+        setSubject(data.data); // Lưu danh sách khóa học vào state
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
+      }
+    }
+
+    const fetchDepartment = async () =>{
+      try {
+        const res = await fetch("http://localhost:5000/api/department/get-all"); // API courses
+        const data = await res.json();
+        setDepartment(data.data); // Lưu danh sách khóa học vào state
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
+      }
+    }
+
+
+    fetchDepartment();
+    fetchSubject();
     fetchSemester();
     fetchCourses();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Kiểm tra xem đã chọn Năm học và Khóa học chưa
-    if (!formData.semesterId || !formData.courseId) {
-      alert("Vui lòng chọn Năm học và Khóa học.");
+  
+    if (!formData.semesterId || !formData.courseId || !formData.subjectId) {
+      alert("Vui lòng chọn Năm học, Khóa học và Môn học.");
       return;
     }
-
     try {
-      const response = await fetch(
+      const subjectLinkResponse = await fetch(
+        "http://localhost:5000/api/assign/assign-course",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            courseId: formData.courseId,
+            subjectId: formData.subjectId,
+          }), // Sending Course ID and Subject ID
+        }
+      );
+      const subjectResult = await subjectLinkResponse.json();
+      if (subjectResult.status !== "OK") {
+        alert("Lỗi liên kết Môn học với Khóa học: " + subjectResult.message);
+        return; // Stop if there's an error
+      }
+  
+      // Second API call to link Semester with Course
+      const semesterLinkResponse = await fetch(
         "http://localhost:5000/api/assign/assign-semester",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(formData), // Gửi dữ liệu dưới dạng JSON
+          body: JSON.stringify({
+            courseId: formData.courseId,
+            semesterId: formData.semesterId,
+          }), // Sending Course ID and Semester ID
         }
       );
-
-      const result = await response.json();
-      if (result.status === "OK") {
-        alert("Khóa học đã được liên kết thành công với Năm học!");
-        closeModal(); 
-      } else {
-        alert("Lỗi: " + result.message);
+      const semesterResult = await semesterLinkResponse.json();
+      if (semesterResult.status !== "OK") {
+        alert("Lỗi liên kết Năm học với Khóa học: " + semesterResult.message);
+        return;
       }
+
+      //three api
+
+      const departmentLinkResponse = await fetch(
+        "http://localhost:5000/api/assign/assign-department",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            departmentId: formData.departmentId,
+            courseId: formData.courseId,
+          }), // Sending Course ID and Semester ID
+        }
+      );
+      const departmentResult = await departmentLinkResponse.json();
+      if (departmentResult.status !== "OK") {
+        alert("Lỗi liên kết Năm học với Khóa học: " + semesterResult.message);
+        return;
+      }
+
+      
+      alert("Khóa học đã được liên kết thành công với Năm học và Môn học!");
+      closeModal(); 
     } catch (error) {
-      console.error("Failed to link Course and Semester:", error);
-      alert("Đã xảy ra lỗi khi liên kết Khóa học với Năm học.");
+      console.error("Failed to link Course, Semester, and Subject:", error);
+      alert("Đã xảy ra lỗi khi liên kết Khóa học với Năm học và Môn học.");
     }
   };
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -112,11 +184,11 @@ export default function ModalNam({ closeModal }) {
                 <span className="sr-only">Close modal</span>
               </button>
             </div>
-
+  
             {/* Modal body */}
             <form className="p-4 md:p-5" onSubmit={handleSubmit}>
               <div className="grid gap-4 mb-4 grid-cols-2">
-                {/* Dropdown cho giáo viên */}
+                {/* Dropdown for Semester */}
                 <div className="col-span-2">
                   <label
                     htmlFor="semesterId"
@@ -141,13 +213,41 @@ export default function ModalNam({ closeModal }) {
                   </select>
                 </div>
 
-                {/* Dropdown cho khóa học */}
+
+                {/* Dropdown for department */}
+
+                <div className="col-span-2">
+                  <label
+                    htmlFor="departmentId"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Khoa chuyên ngành
+                  </label>
+                  <select
+                    name="departmentId"
+                    id="departmentId"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    required
+                    value={formData.departmentId}
+                    onChange={handleChange}
+                  >
+                    <option value="">-- Chọn Khoa --</option>
+                    {departments.map((department) => (
+                      <option key={department._id} value={department._id}>
+                        {department.ten_khoa}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+  
+                {/* Dropdown for Course */}
                 <div className="col-span-2">
                   <label
                     htmlFor="courseId"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Khóa học
+                    Lớp học phần
                   </label>
                   <select
                     name="courseId"
@@ -165,8 +265,35 @@ export default function ModalNam({ closeModal }) {
                     ))}
                   </select>
                 </div>
-              </div>
+  
+                {/* Dropdown for Subject */}
+                <div className="col-span-2">
+                  <label
+                    htmlFor="subjectId"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Môn học
+                  </label>
+                  <select
+                    name="subjectId"
+                    id="subjectId"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    required
+                    value={formData.subjectId}
+                    onChange={handleChange}
+                  >
+                    <option value="">-- Chọn Môn học --</option>
+                    {subjects.map((subject) => (
+                      <option key={subject._id} value={subject._id}>
+                        {subject.ten_mon}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
+                
+              </div>
+  
               <button
                 type="submit"
                 className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -179,4 +306,5 @@ export default function ModalNam({ closeModal }) {
       </div>
     </div>
   );
+  
 }
