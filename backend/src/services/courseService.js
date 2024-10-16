@@ -11,6 +11,7 @@ const createCourse = async (newCourse) => {
     so_tiet_truc_tiep,
     so_tiet_tong,
     loai_mon_hoc,
+    hoc_ky,
     tkb,
     giang_vien_phu_trach,
   } = newCourse;
@@ -32,6 +33,7 @@ const createCourse = async (newCourse) => {
       so_tiet_truc_tiep,
       so_tiet_tong,
       loai_mon_hoc,
+      hoc_ky,
       tkb,
       giang_vien_phu_trach,
     });

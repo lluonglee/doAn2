@@ -33,6 +33,10 @@ const courseSchema = new mongoose.Schema({
     enum: ["Lý thuyết", "Thực hành"],
     required: true,
   },
+  hoc_ky: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Semester",  // Tham chiếu đến học kỳ
+  },
   tkb: [
     {
       thu: {

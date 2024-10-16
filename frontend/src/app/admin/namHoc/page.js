@@ -2,15 +2,22 @@
 import { Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import ModalNamHoc from "./ModalNamHoc"
+import ModalAddNamHoc from "./ModalAddNam"
+import Link from "next/link";
 
 export default function MonHoc() {
   const [isOpen, setIsOpen] = useState(false);
   const [semesters, setSemester] = useState([]); 
   const [selectedSemester, setSelectedSemester] = useState(null); 
+  const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
 
   const openModal = () => {
     setSelectedSemester(null); 
     setIsOpen(true); 
+  };
+
+  const openSecondModal = () => {
+    setIsSecondModalOpen(true); 
   };
 
   const openEditModal = (semester) => {
@@ -20,6 +27,9 @@ export default function MonHoc() {
 
 
   const closeModal = () => setIsOpen(false);
+
+  // Đóng modal thứ hai
+  const closeSecondModal = () => setIsSecondModalOpen(false);
 
   const fetchSemester = async () => {
     try {
@@ -37,7 +47,7 @@ export default function MonHoc() {
 
   useEffect(() => {
     fetchSemester(); 
-  }, [isOpen]); 
+  }, [isOpen, isSecondModalOpen]); 
 
   return (
     <div>
@@ -51,6 +61,17 @@ export default function MonHoc() {
           >
             Thêm mới
           </button>
+
+          {/* Nút mở modal thứ hai */}
+          <button
+            type="button"
+            className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+            onClick={openSecondModal}
+          >
+           Thêm vào Lớp học phần
+          </button>
+
+         
         </div>
       </div>
 
@@ -61,6 +82,7 @@ export default function MonHoc() {
               <tr>
                 <th scope="col" className="px-6 py-3">Hoc ky</th>
                 <th scope="col" className="px-6 py-3">Nam hoc</th>
+                <th scope="col" className="px-6 py-3">Xem danh sách lớp học phần</th>
                 <th scope="col" className="px-6 py-3">tuy chon</th>
                 
               </tr>
@@ -70,6 +92,14 @@ export default function MonHoc() {
                 <tr key={semester._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <td className="px-6 py-4">{semester.hoc_ky}</td>
                   <td className="px-6 py-4">{semester.nam_hoc}</td>
+
+                  <td className="px-6 py-4">
+                    <Link
+                      href={`/admin/namHoc/addNamHoc/${semester._id}`}
+                    >
+                     Danh sách lớp học phần trong học kỳ
+                    </Link>
+                  </td>
                   
                   <td className="px-6 py-4 flex gap-5 justify-center">
                     <a
@@ -93,6 +123,13 @@ export default function MonHoc() {
         <ModalNamHoc
           closeModal={closeModal}
           semester={selectedSemester} 
+        />
+      )}
+
+       {/* Modal thứ hai */}
+       {isSecondModalOpen && (
+        <ModalAddNamHoc
+          closeModal={closeSecondModal}
         />
       )}
     </div>

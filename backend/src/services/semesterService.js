@@ -1,4 +1,5 @@
 const Semester = require("../models/semesterModel");
+const Course = require("../models/courseModel");
 
 const createSemester = async (newSemester) => {
   const { hoc_ky, nam_hoc } = newSemester;
@@ -119,10 +120,47 @@ const deleteSemester = async (id) => {
   }
 };
 
+//const assignSemester
+const assignSemester = async (semesterId, courseId) => {
+  try {
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return {
+        status: "ERR",
+        message: "can not find course",
+      };
+    }
+
+    const semester = await Semester.findById(semesterId);
+    if (!semester) {
+      return {
+        status: "ERR",
+        message: "can not find Semester",
+      };
+    }
+    course.hoc_ky = semester._id;
+    await course.save();
+    semester.cac_lop_hoc_phan.push(course._id);
+    await semester.save();
+
+    return {
+      status: "OK",
+      message: "assign  successfully",
+      data: course,
+    };
+  } catch (error) {
+    return {
+      status: "ERR",
+      message: error.message,
+    };
+  }
+};
+
 module.exports = {
   createSemester,
   getAllSemesters,
   detailSemester,
   updateSemester,
   deleteSemester,
+  assignSemester
 };

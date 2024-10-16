@@ -100,6 +100,26 @@ const semesterController = {
       });
     }
   },
+
+  //assign Semester
+
+  assignSemester: async (req, res) => {
+    const { semesterId, courseId } = req.body;
+    console.log("SemesterID:", semesterId);
+    console.log("CourseID:", courseId);
+    try {
+      const result = await semesterService.assignSemester(semesterId, courseId);
+      res.status(200).json(result);
+      console.log(result)
+    } catch (error) {
+      return res.status(404).json({
+        error: error.message,
+      });
+    }
+  },
+  
+
+
 };
 
 module.exports = semesterController;
