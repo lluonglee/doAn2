@@ -122,7 +122,7 @@ export default function MonHoc() {
                   <td className="px-6 py-4">{semester.nam_hoc}</td>
                   <td className="px-6 py-4">
                     {/* Dynamic Link to detail page */}
-                    <Link href={`/admin/namHoc/addNamHoc/${semester._id}`}>
+                    <Link href={`/admin/namHoc/${semester._id}`}>
                       Danh sách lớp học phần
                     </Link>
                   </td>
