@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 
-export default function ModalMonHoc({ closeModal }) {
+export default function ModalMonHoc({ closeModal, subject }) {
   const [formData, setFormData] = useState({
     ma_mon: "",
     ten_mon: "",
@@ -10,36 +10,50 @@ export default function ModalMonHoc({ closeModal }) {
     tin_chi_thuc_hanh: 0,
   });
 
+  // Populate form data if editing an existing subject
+  useEffect(() => {
+    if (subject) {
+      setFormData({
+        ma_mon: subject.ma_mon || "",
+        ten_mon: subject.ten_mon || "",
+        so_tin_chi: subject.so_tin_chi || 0,
+        tin_chi_ly_thuyet: subject.tin_chi_ly_thuyet || 0,
+        tin_chi_thuc_hanh: subject.tin_chi_thuc_hanh || 0,
+      });
+    }
+  }, [subject]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const url = subject
+      ? `http://localhost:5000/api/subject/update-subject/${subject._id}` // Update if subject exists
+      : "http://localhost:5000/api/subject/create-subject"; // Create new subject
+
     try {
-      const res = await fetch(
-        "http://localhost:5000/api/subject/create-subject",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-  
+      const res = await fetch(url, {
+        method: subject ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
       const data = await res.json();
-      console.log(data); // Log the full response for debugging
       if (data.success) {
         closeModal();
-        setTimeout(() => {
-          alert("Subject added successfully!");
-        }, 100);
+        alert(
+          subject
+            ? "Subject updated successfully!"
+            : "Subject added successfully!"
+        );
       } else {
-        alert("Failed to create Subject: " + data.message);
+        alert("Failed to save Subject: " + data.message);
       }
     } catch (error) {
-      console.error("Failed to add subject:", error);
-      alert("Failed to add subject.");
+      console.error("Failed to save subject:", error);
+      alert("Failed to save subject.");
     }
   };
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -59,7 +73,8 @@ export default function ModalMonHoc({ closeModal }) {
             {/* Modal header */}
             <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Thêm Môn Học
+                {subject ? "Sửa Môn Học" : "Thêm Môn Học"}{" "}
+                {/* Change title based on action */}
               </h3>
               <button
                 type="button"
@@ -85,100 +100,105 @@ export default function ModalMonHoc({ closeModal }) {
               </button>
             </div>
 
-            {/* Modal body */}
+            {/* Modal form */}
             <form className="p-4 md:p-5" onSubmit={handleSubmit}>
-              <div className="grid gap-4 mb-4 grid-cols-2">
-                <div className="col-span-2">
+              <div className="grid gap-4 mb-4">
+                <div>
                   <label
-                    htmlFor="maLopHocPhan"
+                    htmlFor="ma_mon"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
                     Mã môn
                   </label>
                   <input
                     type="text"
+                    id="ma_mon"
                     name="ma_mon"
-                    id="maMon"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Nhập Mã môn học"
-                    required
                     value={formData.ma_mon}
                     onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                    required
                   />
                 </div>
 
-                <div className="col-span-2">
+                <div>
                   <label
-                    htmlFor="siSo"
+                    htmlFor="ten_mon"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Tên Môn học
+                    Tên môn
                   </label>
                   <input
                     type="text"
+                    id="ten_mon"
                     name="ten_mon"
-                    id="tenMon"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Nhập tên môn"
-                    required
                     value={formData.ten_mon}
                     onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                    required
                   />
                 </div>
 
-                <div className="col-span-2">
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <div>
+                  <label
+                    htmlFor="so_tin_chi"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
                     Số tín chỉ
                   </label>
                   <input
                     type="number"
+                    id="so_tin_chi"
                     name="so_tin_chi"
-                    id="soTietTrucTiep"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Nhập số tín chỉ"
-                    required
                     value={formData.so_tin_chi}
                     onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                    required
                   />
                 </div>
 
-                <div className="col-span-2">
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                <div>
+                  <label
+                    htmlFor="tin_chi_ly_thuyet"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
                     Tín chỉ lý thuyết
                   </label>
                   <input
                     type="number"
+                    id="tin_chi_ly_thuyet"
                     name="tin_chi_ly_thuyet"
-                    id="tinChiLyThuyet"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Nhập số tín chỉ lý thuyết"
-                    required
                     value={formData.tin_chi_ly_thuyet}
                     onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                    required
                   />
                 </div>
-                <div className="col-span-2">
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Tín chỉ Thực hành
+
+                <div>
+                  <label
+                    htmlFor="tin_chi_thuc_hanh"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Tín chỉ thực hành
                   </label>
                   <input
                     type="number"
+                    id="tin_chi_thuc_hanh"
                     name="tin_chi_thuc_hanh"
-                    id="tinChiThucHanh"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Nhập số tín chỉ thực hành"
-                    required
                     value={formData.tin_chi_thuc_hanh}
                     onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                    required
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
-                Thêm mới
+                {subject ? "Cập nhật" : "Thêm mới"}
               </button>
             </form>
           </div>

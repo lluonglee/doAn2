@@ -5,28 +5,29 @@ import ModalMonHoc from "./ModelMonHoc";
 
 export default function MonHoc() {
   const [isOpen, setIsOpen] = useState(false);
-  const [subjects, setSubjects] = useState([]); 
-  const [selectedSubject, setSelectedSubject] = useState(null); 
-
+  const [subjects, setSubjects] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [isDelete, setDelete] = useState(false);
   const openModal = () => {
-    setSelectedSubject(null); 
-    setIsOpen(true); 
+    setSelectedSubject(null); // Reset selected subject when adding a new subject
+    setIsOpen(true); // Open modal for adding
   };
 
   const openEditModal = (subject) => {
-    setSelectedSubject(subject); 
-    setIsOpen(true); 
+    setSelectedSubject(subject); // Set the selected subject to be edited
+    setIsOpen(true); // Open modal for editing
   };
-
 
   const closeModal = () => setIsOpen(false);
 
   const fetchSubjects = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/subject/getAll-subject");
+      const res = await fetch(
+        "http://localhost:5000/api/subject/getAll-subject"
+      );
       const data = await res.json();
       if (data.status === "OK") {
-        setSubjects(data.data); 
+        setSubjects(data.data); // Set fetched subjects
       } else {
         console.error("Failed to fetch Subjects:", data.message);
       }
@@ -36,8 +37,33 @@ export default function MonHoc() {
   };
 
   useEffect(() => {
-    fetchSubjects(); 
-  }, [isOpen]); 
+    fetchSubjects(); // Fetch subjects when the component mounts or modal closes
+  }, [isOpen, isDelete]);
+
+  const deleteSubject = async (subjectId) => {
+    if (!window.confirm("Are you sure you want to delete this subject?"))
+      return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/subject/delete-subject/${subjectId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await res.json();
+      if (data.success) {
+        alert("Subject deleted successfully!");
+        fetchSubjects(); // Refetch the subjects to update the list
+      } else {
+        alert("Failed to delete subject: " + data.message);
+      }
+    } catch (error) {
+      console.error("Error deleting subject:", error);
+      alert("Error deleting subject.");
+    }
+  };
 
   return (
     <div>
@@ -59,17 +85,32 @@ export default function MonHoc() {
           <table className="w-full text-sm text-gray-500 dark:text-gray-400 align-middle text-center">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" className="px-6 py-3">Mã môn</th>
-                <th scope="col" className="px-6 py-3">Tên môn</th>
-                <th scope="col" className="px-6 py-3">Số tín chỉ</th>
-                <th scope="col" className="px-6 py-3">Số tín chỉ lý thuyết</th>
-                <th scope="col" className="px-6 py-3">Số tín chỉ thực hành</th>
-                <th scope="col" className="px-6 py-3">Tùy chọn</th>
+                <th scope="col" className="px-6 py-3">
+                  Mã môn
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Tên môn
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Số tín chỉ
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Số tín chỉ lý thuyết
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Số tín chỉ thực hành
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Tùy chọn
+                </th>
               </tr>
             </thead>
             <tbody>
               {subjects.map((subject) => (
-                <tr key={subject._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <tr
+                  key={subject._id}
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                >
                   <td className="px-6 py-4">{subject.ma_mon}</td>
                   <td className="px-6 py-4">{subject.ten_mon}</td>
                   <td className="px-6 py-4">{subject.so_tin_chi}</td>
@@ -79,11 +120,17 @@ export default function MonHoc() {
                     <a
                       href="#"
                       className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                      onClick={() => openEditModal(subject)} 
+                      onClick={() => openEditModal(subject)} // Open modal for editing
                     >
                       Edit
                     </a>
-                    <Trash2 className="cursor-pointer" />
+                    <Trash2
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setDelete(!isDelete);
+                        return deleteSubject(subject._id);
+                      }} // Delete subject on click
+                    />
                   </td>
                 </tr>
               ))}
@@ -96,7 +143,7 @@ export default function MonHoc() {
       {isOpen && (
         <ModalMonHoc
           closeModal={closeModal}
-          subject={selectedSubject} 
+          subject={selectedSubject} // Pass selected subject for editing
         />
       )}
     </div>

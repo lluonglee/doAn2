@@ -48,8 +48,15 @@ const getAllSemesters = async () => {
 
 const detailSemester = async (id) => {
   try {
-    const semester = await Semester.findById(id);
-
+    const semester = await Semester.findById(id).populate({
+      path: "cac_lop_hoc_phan",
+      model: "Course",
+      populate: [
+        { path: "subject", model: "Subject" },
+        { path: "department", model: "Department" },
+        // Thêm các populate khác nếu cần
+      ],
+    });
     if (!semester) {
       return {
         status: "ERR",
@@ -162,5 +169,5 @@ module.exports = {
   detailSemester,
   updateSemester,
   deleteSemester,
-  assignSemester
+  assignSemester,
 };
