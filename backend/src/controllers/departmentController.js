@@ -101,6 +101,17 @@ const departmentController = {
       });
     }
   },
-  assignDepartment: async (req, res) => {},
+  assignDepartmentToTeacher: async (req, res) => {
+    const { departmentId, teacherId } = req.body;
+    try {
+      const result = await DepartmentService.assignDepartmentToTeacher(departmentId, teacherId);
+      res.status(200).json(result);
+    } catch (error) {
+      return res.status(404).json({
+        error: error.message,
+      });
+    }
+
+  },
 };
 module.exports = departmentController;

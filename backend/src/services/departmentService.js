@@ -1,4 +1,5 @@
 const Department = require("../models/departmentModel");
+const Teacher = require("../models/teacherModels")
 
 const createDepartment = async (newDepartment) => {
   const { ma_khoa, ten_khoa, ghi_chu } = newDepartment;
@@ -44,20 +45,44 @@ const getAllDepartment = async () => {
     };
   }
 };
+// const detailDepartment = async (id) => {
+//   try {
+//     const depart = await Department.findById(id);
+
+//     if (!depart) {
+//       return {
+//         status: "ERR",
+//         message: "the department not found",
+//       };
+//     }
+
+//     return {
+//       status: "OK",
+//       message: "Successfully",
+//       data: depart,
+//     };
+//   } catch (error) {
+//     return {
+//       status: "ERR",
+//       message: error.message,
+//     };
+//   }
+// };
+
 const detailDepartment = async (id) => {
   try {
-    const depart = await Department.findById(id);
+    const depart = await Department.findById(id).populate('giang_vien_trong_khoa'); // Populate teacher details
 
     if (!depart) {
       return {
         status: "ERR",
-        message: "the department not found",
+        message: "The department was not found",
       };
     }
 
     return {
       status: "OK",
-      message: "Successfully",
+      message: "Successfully fetched department details",
       data: depart,
     };
   } catch (error) {
@@ -67,6 +92,7 @@ const detailDepartment = async (id) => {
     };
   }
 };
+
 const updateDepartment = async (id, data) => {
   try {
     const existingDepartment = await Department.findById(id);
@@ -115,10 +141,55 @@ const deleteDepartment = async (id) => {
     };
   }
 };
+
+
+const assignDepartmentToTeacher = async (departmentId, teacherId) =>{
+  try{
+    const department = await Department.findById(departmentId);
+    if(!department){
+      return{
+        status: "ERR",
+        message:"can not find department"
+      }
+    }
+
+    const teacher = await Teacher.findById(teacherId);
+    if(!teacher){
+      return{
+        status:"ERR",
+        message:"can't not find teacher"
+      }
+    }
+
+    teacher.department = department._id;
+    await teacher.save();
+
+    department.giang_vien_trong_khoa.push(teacher._id);
+    await department.save();
+
+
+    return {
+      status:"OK",
+      message: "assign successful",
+      data: department
+    }
+
+
+
+  }catch(error){
+
+    return {
+      status: "ERR",
+      message: error.message,
+    };
+
+  }
+}
 module.exports = {
   createDepartment,
   getAllDepartment,
   detailDepartment,
   updateDepartment,
   deleteDepartment,
+  assignDepartmentToTeacher
 };

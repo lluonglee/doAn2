@@ -3,16 +3,22 @@ import { Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import ModalKhoaChuyenMon from "./ModalKhoaChuyenMon";
 import Link from "next/link";
+import ModalAddTeacher from "./ModalAddTeacher";
 
 export default function KhoaChuyenMon() {
   const [isOpen, setIsOpen] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState(null); // State to store selected department for editing
   const [isDelete, setDelete] = useState(false);
+  const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
   // Hàm để mở modal (for creating or updating)
   const openModal = (department = null) => {
-    setSelectedDepartment(department); // Set the selected department if editing, or null if creating
+    setSelectedDepartment(department); 
     setIsOpen(true);
+  };
+
+  const openSecondModal = () => {
+    setIsSecondModalOpen(true);
   };
 
   // Hàm để đóng modal
@@ -20,6 +26,9 @@ export default function KhoaChuyenMon() {
     setIsOpen(false);
     setSelectedDepartment(null); // Reset the selected department
   };
+
+  const closeSecondModal = () => setIsSecondModalOpen(false);
+
 
   // Fetch departments from API
   const fetchDepartments = async () => {
@@ -78,9 +87,10 @@ export default function KhoaChuyenMon() {
           </button>
           <button
             type="button"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            className="text-white bg-green-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+            onClick={openSecondModal}
           >
-            Tìm kiếm
+            Thêm Giảng viên
           </button>
         </div>
       </div>
@@ -120,7 +130,7 @@ export default function KhoaChuyenMon() {
                   <td className="px-6 py-4">{department.ma_khoa}</td>
                   <td className="px-6 py-4">
                     <Link
-                      href={`/admin/khoaChuyenMon/danhSachGiangVien/${department._id}`}
+                      href={`/admin/khoaChuyenMon/${department._id}`}
                     >
                       Danh sách Giảng viên
                     </Link>
@@ -139,7 +149,7 @@ export default function KhoaChuyenMon() {
                       onClick={() => {
                         setDelete(!isDelete);
                         return deleteDepartment(department._id);
-                      }} // Handle delete
+                      }} 
                     />
                   </td>
                 </tr>
@@ -152,9 +162,11 @@ export default function KhoaChuyenMon() {
       {isOpen && (
         <ModalKhoaChuyenMon
           closeModal={closeModal}
-          department={selectedDepartment} // Pass selected department to modal
+          department={selectedDepartment} 
         />
       )}
+      {/* Second modal for adding to class section */}
+      {isSecondModalOpen && <ModalAddTeacher closeModal={closeSecondModal} />}
     </div>
   );
 }
