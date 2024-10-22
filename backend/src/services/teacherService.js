@@ -45,7 +45,7 @@ const createTeacher = async (newTeacher) => {
 //get all teacher
 const getAllTeacher = async () => {
   try {
-    const getAll = await Teacher.find();
+    const getAll = await Teacher.find().populate('department');
     return {
       status: "OK",
       message: "Get all teacher successful",

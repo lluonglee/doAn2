@@ -26,7 +26,7 @@ export default function GiangVien() {
     try {
       const res = await fetch("http://localhost:5000/api/teacher/get-all");
       const data = await res.json();
-      if (data.status === "OK") {
+      if (res.ok && data.status === "OK") {
         setTeachers(data.data);
       } else {
         console.error("Failed to fetch teachers:", data.message);
@@ -47,10 +47,8 @@ export default function GiangVien() {
           }
         );
         const data = await res.json();
-        if (data.success) {
+        if (res.ok && data.success) {
           setTeachers(teachers.filter((teacher) => teacher._id !== id)); // Cập nhật lại danh sách sau khi xóa
-
-          console.log(isDelete);
           alert("Giảng viên đã được xóa thành công!");
         } else {
           console.error("Failed to delete teacher:", data.message);
@@ -62,8 +60,8 @@ export default function GiangVien() {
   };
 
   useEffect(() => {
-    fetchTeachers();
-  }, [isOpen, isDelete]);
+    fetchTeachers(); // Fetch giảng viên khi component được mount
+  }, [isOpen, isDelete]); // Gọi lại khi trạng thái modal hoặc xóa thay đổi
 
   return (
     <div>
@@ -115,7 +113,9 @@ export default function GiangVien() {
                     {teacher.ten}
                   </th>
                   <td className="px-6 py-4">{teacher.email}</td>
-                  <td className="px-6 py-4">{teacher.khoa_chuyen_mon}</td>
+                  <td className="px-6 py-4">
+                    {teacher.department?.ten_khoa || "Không có khoa"}
+                  </td>
                   <td className="px-6 py-4">{teacher.ghi_chu}</td>
                   <td className="px-6 py-4 flex gap-5 justify-center">
                     <a
@@ -130,7 +130,7 @@ export default function GiangVien() {
                       onClick={() => {
                         setDelete(!isDelete);
                         return deleteTeacher(teacher._id);
-                      }} // Thêm sự kiện xóa
+                      }}
                     />
                   </td>
                 </tr>

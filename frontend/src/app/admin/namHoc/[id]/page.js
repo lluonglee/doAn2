@@ -30,24 +30,66 @@ export default function GetDetail() {
 
   return (
     <div>
-      <h2>Chi tiết học kỳ</h2>
+      <h2 className="text-slate-700 text-2xl">Chi tiết năm học</h2>
       {semesterDetail ? (
         <div>
-          <p>Học kỳ: {semesterDetail.hoc_ky}</p>
-          <p>Năm học: {semesterDetail.nam_hoc}</p>
+          <p className="py-2"><strong>Học kỳ: </strong> {semesterDetail.hoc_ky}</p>
+          <p className="py-2"><strong>Năm Học: </strong> {semesterDetail.nam_hoc}</p>
 
-          {/* Display course details */}
-          <h3>Danh sách lớp học phần:</h3>
+          <h3>Danh sách Lớp học phần và môn học trong học kỳ:</h3>
           {semesterDetail.cac_lop_hoc_phan.length > 0 ? (
-            <ul>
-              {semesterDetail.cac_lop_hoc_phan.map((course) => (
-                <li key={course._id}>
-                  Mã lớp: {course.ma_lop_hoc_phan}, Sĩ số: {course.si_so}, Loại
-                  môn học: {course.loai_mon_hoc}
-                  {/* Add other course fields as needed */}
-                </li>
-              ))}
-            </ul>
+            <table className="mt-4 table-auto w-full text-sm text-left text-gray-500">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2">Mã lớp</th>
+                  <th className="px-4 py-2">Sĩ số</th>
+                  <th className="px-4 py-2">Loại môn học</th>
+                  <th className="px-4 py-2">Môn học</th>
+                  <th className="px-4 py-2">Mã môn</th>
+                  <th className="px-4 py-2">Số tín chỉ</th>
+                  <th className="px-4 py-2">Khoa</th>
+                  <th className="px-4 py-2">Mã khoa</th>
+                  <th className="px-4 py-2">Thời khóa biểu</th>
+                </tr>
+              </thead>
+              <tbody>
+                {semesterDetail.cac_lop_hoc_phan.map((course) => (
+                  <tr key={course._id} className="bg-white border-b">
+                    <td className="px-4 py-2">{course.ma_lop_hoc_phan}</td>
+                    <td className="px-4 py-2">{course.si_so}</td>
+                    <td className="px-4 py-2">{course.loai_mon_hoc}</td>
+                    
+                    {/* Subject Details */}
+                    <td className="px-4 py-2">
+                      {course.subject ? course.subject.ten_mon : "N/A"}
+                    </td>
+                    <td className="px-4 py-2">
+                      {course.subject ? course.subject.ma_mon : "N/A"}
+                    </td>
+                    <td className="px-4 py-2">
+                      {course.subject ? course.subject.so_tin_chi : "N/A"}
+                    </td>
+                    
+                    {/* Department Details */}
+                    <td className="px-4 py-2">
+                      {course.department ? course.department.ten_khoa : "N/A"}
+                    </td>
+                    <td className="px-4 py-2">
+                      {course.department ? course.department.ma_khoa : "N/A"}
+                    </td>
+
+                    {/* Timetable */}
+                    <td className="px-4 py-2">
+                      {course.tkb.map((tkb) => (
+                        <div key={tkb._id}>
+                          {tkb.thu} - Tiết: {tkb.tiet}, Giờ: {tkb.gio}
+                        </div>
+                      ))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           ) : (
             <p>Không có lớp học phần nào.</p>
           )}

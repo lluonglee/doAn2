@@ -32,7 +32,7 @@ export default function GetDetailDepartment() {
 
       {departmentDetail ? (
         <div>
-          <p><strong>Mã Khoa:</strong> {departmentDetail.ma_khoa}</p>
+          <p className="py-2"><strong>Mã Khoa:</strong> {departmentDetail.ma_khoa}</p>
           <p><strong>Tên Khoa:</strong> {departmentDetail.ten_khoa}</p>
 
           {/* Table to display the list of teachers */}

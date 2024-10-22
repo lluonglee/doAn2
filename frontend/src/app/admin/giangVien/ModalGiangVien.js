@@ -34,7 +34,6 @@ export default function ModalGiangVien({ closeModal, teacher }) {
       setFormData({
         ten: teacher.ten || "",
         email: teacher.email || "",
-        khoa_chuyen_mon: teacher.khoa_chuyen_mon || "",
         ghi_chu: teacher.ghi_chu || "",
       });
     }
@@ -147,25 +146,7 @@ export default function ModalGiangVien({ closeModal, teacher }) {
                     required
                   />
                 </div>
-                <div>
-                  <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                    Khoa chuyên môn
-                  </label>
-                  <select
-                    name="khoa_chuyen_mon"
-                    value={formData.khoa_chuyen_mon}
-                    onChange={handleChange}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                    required
-                  >
-                    <option value="">Chọn khoa</option>
-                    {departments.map((department) => (
-                      <option key={department._id} value={department.ten_khoa}>
-                        {department.ten_khoa}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              
                 <div>
                   <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                     Ghi chú
