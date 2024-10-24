@@ -57,8 +57,29 @@ export default function Sidebar() {
                     fill="currentColor"
                     viewBox="0 0 22 21"
                   >
-                    <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
-                    <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
+                    <svg
+                      id="Layer_1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlnsXlink="http://www.w3.org/1999/xlink"
+                      viewBox="0 0 32 32"
+                      enableBackground="new 0 0 32 32"
+                      xmlSpace="preserve"
+                    >
+                      <polyline
+                        fill="none"
+                        stroke="#000000"
+                        strokeWidth={2}
+                        strokeMiterlimit={10}
+                        points="3,17 16,4 29,17 "
+                      />
+                      <polyline
+                        fill="none"
+                        stroke="#000000"
+                        strokeWidth={2}
+                        strokeMiterlimit={10}
+                        points="6,14 6,27 13,27 13,17 19,17 19,27 26,27  26,14 "
+                      />
+                    </svg>
                   </svg>
                   <span className="ms-3">Dashboard</span>
                 </a>
@@ -77,10 +98,10 @@ export default function Sidebar() {
                   fill="currentColor"
                   viewBox="0 0 18 21"
                 >
-                  <path d="M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z" />
+                  <path d="M17.545 15.467l-3.779-3.779a6.15 6.15 0 0 0 .898-3.21c0-3.417-2.961-6.377-6.378-6.377A6.185 6.185 0 0 0 2.1 8.287c0 3.416 2.961 6.377 6.377 6.377a6.15 6.15 0 0 0 3.115-.844l3.799 3.801a.953.953 0 0 0 1.346 0l.943-.943c.371-.371.236-.84-.135-1.211zM4.004 8.287a4.282 4.282 0 0 1 4.282-4.283c2.366 0 4.474 2.107 4.474 4.474a4.284 4.284 0 0 1-4.283 4.283c-2.366-.001-4.473-2.109-4.473-4.474z" />
                 </svg>
                 <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">
-                  E-commerce
+                  Tra cứu thông tin
                 </span>
                 <svg
                   className="w-3 h-3"
@@ -104,27 +125,27 @@ export default function Sidebar() {
                 <li>
                   <Link href="/products" legacyBehavior>
                     <a className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                      Products
+                      TKB Giảng Viên
                     </a>
                   </Link>
                 </li>
                 <li>
                   <Link href="/billing" legacyBehavior>
                     <a className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                      Billing
+                      TKB lớp học phần
                     </a>
                   </Link>
                 </li>
                 <li>
                   <Link href="/invoice" legacyBehavior>
                     <a className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                      Invoice
+                      TKB đơn vị
                     </a>
                   </Link>
                 </li>
               </ul>
             </li>
-            {/* Add more menu items here */}
+            {/* Add more menu */}
           </ul>
         </div>
       </aside>
