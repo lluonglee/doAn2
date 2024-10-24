@@ -3,7 +3,7 @@ const teacherSchema = new mongoose.Schema(
   {
     ten: { type: String },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String },
     //bộ phận chuyên môn
     department: {
       type: mongoose.Schema.Types.ObjectId,
