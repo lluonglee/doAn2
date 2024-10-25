@@ -25,7 +25,8 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ClientLayout>{children}</ClientLayout> {/* Wrap with ClientLayout */}
+        {/* Wrap children with ClientLayout for path-specific layouts */}
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
