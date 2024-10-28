@@ -1,10 +1,73 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 
-export default function ModalCaHoc({ closeModal }) {
-  const handleSubmit = (e) => {
-    // prevent reload page when submit
-    e.preventDefault();
+export default function ModalCaHoc({ closeModal, classTime }) {
+  const [formData, setFormData] = useState({
+    tenCa: "",
+    buoi: "",
+    thoiGian: "",
+    ghi_chu: "",
+  });
+
+  const [classTimes, setClassTimes] = useState([]);
+
+  const fetchClassTimes = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/time/get-all");
+      const data = await response.json();
+      setClassTimes(data.data);
+    } catch (error) {
+      console.error("Failed to fetch class times:", error);
+    }
   };
+
+  useEffect(() => {
+    fetchClassTimes();
+
+    if (classTime) {
+      setFormData({
+        tenCa: classTime.tenCa,
+        buoi: classTime.buoi,
+        thoiGian: classTime.thoiGian,
+        ghi_chu: classTime.ghi_chu,
+      });
+    }
+  }, [classTime]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const url = classTime
+      ? `http://localhost:5000/api/time/update-time/${classTime._id}`
+      : "http://localhost:5000/api/time/create-classTime";
+
+    const method = classTime ? "PUT" : "POST";
+
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        alert(classTime ? "Class time updated successfully!" : "Class time added successfully!");
+        closeModal();
+        fetchClassTimes();
+      } else {
+        alert("Failed to save class time");
+      }
+    } catch (error) {
+      console.error("Failed to save class time:", error);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
   return (
     <div>
       <div
@@ -15,10 +78,9 @@ export default function ModalCaHoc({ closeModal }) {
       >
         <div className="relative p-4 w-full max-w-md max-h-full">
           <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            {/* Modal header */}
             <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Create New Product
+                {classTime ? "Update Class Time" : "Add New Class Time"}
               </h3>
               <button
                 type="button"
@@ -44,74 +106,80 @@ export default function ModalCaHoc({ closeModal }) {
               </button>
             </div>
 
-            {/* Modal body */}
-            {/** if submit close modal */}
-            <form className="p-4 md:p-5" onSubmit={handleSubmit && closeModal}>
+            <form className="p-4 md:p-5" onSubmit={handleSubmit}>
               <div className="grid gap-4 mb-4 grid-cols-2">
                 <div className="col-span-2">
                   <label
-                    htmlFor="name"
+                    htmlFor="tenCa"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Name
+                    Tên Ca
                   </label>
                   <input
                     type="text"
-                    name="name"
-                    id="name"
+                    name="tenCa"
+                    id="tenCa"
+                    value={formData.tenCa}
+                    onChange={handleChange}
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="Type product name"
+                    placeholder="Nhập tên ca học"
                     required
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
                   <label
-                    htmlFor="price"
+                    htmlFor="buoi"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Price
-                  </label>
-                  <input
-                    type="number"
-                    name="price"
-                    id="price"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                    placeholder="$2999"
-                    required
-                  />
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <label
-                    htmlFor="category"
-                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                  >
-                    Category
+                    Buổi
                   </label>
                   <select
-                    id="category"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    name="buoi"
+                    id="buoi"
+                    value={formData.buoi}
+                    onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    required
                   >
-                    <option value="" disabled>
-                      Select category
-                    </option>
-                    <option value="TV">TV/Monitors</option>
-                    <option value="PC">PC</option>
-                    <option value="GA">Gaming/Console</option>
-                    <option value="PH">Phones</option>
+                    <option value="">Chọn buổi</option>
+                    <option value="Sáng">Sáng</option>
+                    <option value="Chiều">Chiều</option>
+                    <option value="Tối">Tối</option>
                   </select>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <label
+                    htmlFor="thoiGian"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Thời Gian
+                  </label>
+                  <input
+                    type="text"
+                    name="thoiGian"
+                    id="thoiGian"
+                    value={formData.thoiGian}
+                    onChange={handleChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    placeholder="08:00 - 10:00"
+                    required
+                  />
                 </div>
                 <div className="col-span-2">
                   <label
-                    htmlFor="description"
+                    htmlFor="ghi_chu"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
-                    Product Description
+                    Ghi Chú
                   </label>
                   <textarea
-                    id="description"
-                    rows="4"
+                    name="ghi_chu"
+                    id="ghi_chu"
+                    value={formData.ghi_chu}
+                    onChange={handleChange}
+                    rows="2"
                     className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    placeholder="Write product description here"
+                    placeholder="Ghi chú nếu có"
                   />
                 </div>
               </div>
@@ -131,7 +199,7 @@ export default function ModalCaHoc({ closeModal }) {
                     clipRule="evenodd"
                   />
                 </svg>
-                Add new product
+                {classTime ? "Update Class Time" : "Add Class Time"}
               </button>
             </form>
           </div>

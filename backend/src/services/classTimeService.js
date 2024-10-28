@@ -96,7 +96,7 @@ const deleteClassTime = async (id) => {
       };
     }
 
-    //   await ClassTime.findByIdAndDelete(classTimeID);
+      await ClassTime.findByIdAndDelete(classTimeID);
     return {
       status: "Ok",
       message: "Delete class time successful",
