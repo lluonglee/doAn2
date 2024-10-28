@@ -6,6 +6,8 @@ const departmentRouter = require("./departmentRouter")
 const semesterRouter = require("./semesterRouter")
 const excelRouter = require("./excelRouter")
 const classTimeRouter = require("./classTimeRouter")
+const scheduleRouter = require("./scheduleRouter")
+
 const routes = (app) =>{
     app.use('/api/teacher',teacherRouter)
     app.use('/api/course', courseRouter)
@@ -15,6 +17,7 @@ const routes = (app) =>{
     app.use('/api/semester', semesterRouter)
     app.use('/api/excel', excelRouter)
     app.use('/api/time', classTimeRouter)
+    app.use('/api/schedule', scheduleRouter)
 
 
 }

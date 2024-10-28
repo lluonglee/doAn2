@@ -1,27 +1,76 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
-import { useState } from "react";
 import ModalTKB from "./ModalTKB";
-export default function page() {
+
+export default function Page() {
   const [isOpen, setIsOpen] = useState(false);
-  // Hàm để mở modal
+  const [schedules, setSchedules] = useState([]);
+
   const openModal = () => setIsOpen(true);
 
-  // Hàm để đóng modal
+  // Function to close the modal
   const closeModal = () => setIsOpen(false);
+
+  // Fetch schedules from the server
+  const fetchSchedules = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/schedule/get-all");
+      const data = await res.json();
+      if (res.ok && data.status === "OK") {
+        setSchedules(data.data); // Update state with fetched data
+      } else {
+        console.error("Failed to fetch schedule:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching schedule:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSchedules(); // Call the function correctly with parentheses
+  }, []);
+
   return (
     <div>
       thoi khoa bieu
       <div>
-        <div class="relative overflow-x-auto shadow-md  ml-3 mr-3 ">
-          <table class="w-full text-sm   text-gray-500 dark:text-gray-400  align-middle  text-center">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <div className="relative overflow-x-auto shadow-md ml-3 mr-3">
+          <table className="w-full text-sm text-gray-500 dark:text-gray-400 align-middle text-center">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th scope="col" class="px-6 py-3">
+                <th scope="col" className="px-6 py-3">
                   Thứ - Ngày học
                 </th>
-                <th scope="col" class="px-6 py-3">
+              </tr>
+            </thead>
+            <tbody>
+              {schedules.map((schedule, index) => (
+                <tr
+                  key={index}
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                >
+                  <th
+                    scope="row"
+                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    {schedule.dayOfWeek}
+                  </th>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {/* Render modal if isOpen is true */}
+      {isOpen && <ModalTKB closeModal={closeModal} />}
+    </div>
+  );
+}
+
+
+{
+  /* <th scope="col" class="px-6 py-3">
                   Ca học
                 </th>
                 <th scope="col" class="px-6 py-3">
@@ -32,18 +81,11 @@ export default function page() {
                 </th>
                 <th scope="col" class="px-6 py-3">
                   Thao tác
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                <th
-                  scope="row"
-                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                >
-                  Thứ 2
-                </th>
-                <td class="px-6 py-4">Silver</td>
+                </th> */
+}
+
+{
+  /* <td class="px-6 py-4">Silver</td>
                 <td class="px-6 py-4">Laptop</td>
                 <td class="px-6 py-4">$2999</td>
                 <td class="px-6 py-4 flex gap-5 justify-center">
@@ -55,9 +97,10 @@ export default function page() {
                     Edit
                   </a>
                   <Trash2 className="cursor-pointer" />
-                </td>
-              </tr>
-              <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                </td> */
+}
+{
+  /* <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                 <th
                   scope="row"
                   class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -182,13 +225,5 @@ export default function page() {
                   </a>
                   <Trash2 className="cursor-pointer" />
                 </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      {/** gọi modal */}
-      {isOpen && <ModalTKB closeModal={closeModal} />}
-    </div>
-  );
+              </tr> */
 }

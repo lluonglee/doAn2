@@ -1,40 +1,35 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const scheduleSchema = new mongoose.Schema({
   ma_lop_hoc_phan: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Course',
-    required: true,
+    ref: "Course",
   },
   ma_mon: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Subject',
-    required: true,
+    ref: "Subject",
   },
-  ten_mon: {
-    type: String,
-    required: true,
+  classTime: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "CaHoc",
   },
   giang_vien_phu_trach: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Teacher',
-    required: true,
+    ref: "Teacher",
   },
-  tkb: [
-    {
-      thu: {
-        type: String,
-        required: true,
-      },
-      tiet: {
-        type: String,
-        required: true,
-      },
-      gio: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+  dayOfWeek: {
+    type: String,
+    required: true,
+    enum: [
+      "Thứ 2",
+      "Thứ 3",
+      "Thứ 4",
+      "Thứ 5",
+      "Thứ 6",
+      "Thứ 7",
+      "Chủ Nhật",
+    ],
+  },
+
 });
 
-module.exports = mongoose.model('Schedule', scheduleSchema);
+module.exports = mongoose.model("Schedule", scheduleSchema);
