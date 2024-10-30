@@ -21,8 +21,18 @@ const classTimeController = {
   },
   getAllClassTimes: async (req, res) => {
     try {
-      const response = await classTimeService.getAllClassTimes();
-      return res.status(200).json(response);
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 5;
+
+      const { data, totalPages, currentPage } =
+        await classTimeService.getAllClassTimes(page, limit);
+
+      res.status(200).json({
+        status: "OK",
+        data,
+        currentPage,
+        totalPages,
+      });
     } catch (error) {
       return res.status(500).json({
         status: "ERR",

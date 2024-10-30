@@ -9,7 +9,9 @@ export default function GiangVien() {
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [isDelete, setDelete] = useState(false);
   const [excelFile, setExcelFile] = useState(null); // State lưu file Excel
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 5;
   const openModal = () => {
     setSelectedTeacher(null);
     setIsOpen(true);
@@ -23,12 +25,16 @@ export default function GiangVien() {
   const closeModal = () => setIsOpen(false);
 
   // Hàm fetch danh sách giảng viên từ backend
-  const fetchTeachers = async () => {
+  const fetchTeachers = async (page = 1) => {
     try {
-      const res = await fetch("http://localhost:5000/api/teacher/get-all");
+      const res = await fetch(
+        `http://localhost:5000/api/teacher/get-all?page=${page}&limit=${limit}`
+      );
       const data = await res.json();
       if (res.ok && data.status === "OK") {
         setTeachers(data.data);
+        setCurrentPage(data.currentPage);
+        setTotalPages(data.totalPages);
       } else {
         console.error("Failed to fetch teachers:", data.message);
       }
@@ -79,7 +85,7 @@ export default function GiangVien() {
       const data = await res.json();
       if (res.ok && data.status === "OK") {
         alert("File Excel đã được import thành công!");
-        fetchTeachers(); // Cập nhật lại danh sách giảng viên sau khi import
+        fetchSemester(currentPage); // Cập nhật lại danh sách giảng viên sau khi import
       } else {
         alert("Import file thất bại: " + data.message);
       }
@@ -89,8 +95,8 @@ export default function GiangVien() {
   };
 
   useEffect(() => {
-    fetchTeachers(); 
-  }, [isOpen, isDelete]); 
+    fetchTeachers(currentPage);
+  }, [isOpen, isDelete, currentPage]);
 
   return (
     <div>
@@ -105,7 +111,6 @@ export default function GiangVien() {
             Thêm mới
           </button>
           <input
-            
             type="file"
             accept=".xlsx, .xls"
             onChange={(e) => setExcelFile(e.target.files[0])}
@@ -169,7 +174,7 @@ export default function GiangVien() {
                       Edit
                     </a>
                     <Trash2
-                      className="cursor-pointer"
+                      className="cursor-pointer text-red-600"
                       onClick={() => {
                         setDelete(!isDelete);
                         return deleteTeacher(teacher._id);
@@ -182,6 +187,30 @@ export default function GiangVien() {
           </table>
         </div>
       </div>
+      {/* Pagination Controls */}
+      {
+        <div className="flex justify-center items-center mt-4">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            className="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2 disabled:opacity-50"
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <span className="text-gray-600">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            className="bg-gray-500 text-white px-4 py-2 rounded-lg ml-2 disabled:opacity-50"
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      }
 
       {isOpen && (
         <ModalGiangVien closeModal={closeModal} teacher={selectedTeacher} />

@@ -1,8 +1,9 @@
 const Subject = require("../models/subjectModel");
-const Course = require("../models/courseModel")
+const Course = require("../models/courseModel");
 
 const CreateSubject = async (newSubject) => {
-  const { ma_mon, ten_mon, so_tin_chi,tin_chi_ly_thuyet,tin_chi_thuc_hanh } = newSubject;
+  const { ma_mon, ten_mon, so_tin_chi, tin_chi_ly_thuyet, tin_chi_thuc_hanh } =
+    newSubject;
 
   try {
     const existingSubject = await Subject.findOne({ ma_mon });
@@ -18,7 +19,7 @@ const CreateSubject = async (newSubject) => {
       ten_mon,
       so_tin_chi,
       tin_chi_ly_thuyet,
-      tin_chi_thuc_hanh
+      tin_chi_thuc_hanh,
     });
 
     return {
@@ -33,13 +34,20 @@ const CreateSubject = async (newSubject) => {
     };
   }
 };
-const getAllSubject = async () => {
+const getAllSubject = async ({ page, limit }) => {
   try {
-    const getAll = await Subject.find();
+    const skip = (page - 1) * limit;
+    const subjects = await Subject.find().skip(skip).limit(limit);
+    const totalSubjects = await Subject.countDocuments(); // Total count
+    // console.log("Fetching subjects:", { page, limit, skip, subjects });
     return {
       status: "OK",
-      message: "get all subject Successful",
-      data: getAll,
+      data: subjects,
+      pagination: {
+        totalItems: totalSubjects,
+        totalPages: Math.ceil(totalSubjects / limit),
+        currentPage: page,
+      },
     };
   } catch (err) {
     return {
@@ -121,22 +129,22 @@ const deleteSubject = async (id) => {
 };
 //assign subject to course
 
-const assignCourse = async (subjectId, courseId) =>{
-  try{
+const assignCourse = async (subjectId, courseId) => {
+  try {
     const course = await Course.findById(courseId);
-    if(!course){
+    if (!course) {
       return {
         status: "ERR",
-        message: "can not find Course"
-      }
+        message: "can not find Course",
+      };
     }
 
-    const subject = await Subject.findById(subjectId)
-    if(!subject){
+    const subject = await Subject.findById(subjectId);
+    if (!subject) {
       return {
         status: "ERR",
-        message:"can not find Subject"
-      }
+        message: "can not find Subject",
+      };
     }
 
     course.subject = subject._id;
@@ -145,19 +153,18 @@ const assignCourse = async (subjectId, courseId) =>{
     subject.cac_lop_hoc_phan.push(course._id);
     await subject.save();
 
-    return{
+    return {
       status: "OK",
       message: "assign Course successful",
-      data: course
-    }
-
-  }catch(error){
+      data: course,
+    };
+  } catch (error) {
     return {
       status: "ERR",
       message: error.message,
     };
   }
-}
+};
 module.exports = {
   assignCourse,
   CreateSubject,

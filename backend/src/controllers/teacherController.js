@@ -103,8 +103,18 @@ const teacherController = {
 
   getAllTeacher: async (req, res) => {
     try {
-      const response = await teacherService.getAllTeacher();
-      return res.status(200).json(response);
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 5;
+
+      const { data, totalPages, currentPage } =
+        await teacherService.getAllTeacher(page, limit);
+
+      res.status(200).json({
+        status: "OK",
+        data,
+        currentPage,
+        totalPages,
+      });
     } catch (error) {
       return {
         status: "ERR",

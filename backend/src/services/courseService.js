@@ -50,20 +50,21 @@ const createCourse = async (newCourse) => {
     };
   }
 };
-const getAllCourse = async () => {
-  try {
-    const getAll = await Course.find();
-    return {
-      status: "OK",
-      message: "get all course Successful",
-      data: getAll,
-    };
-  } catch (err) {
-    return {
-      status: "ERR",
-      message: err.message,
-    };
-  }
+const getAllCourse = async (page, limit) => {
+  const skip = (page - 1) * limit;
+
+  const [data, totalCount] = await Promise.all([
+    Course.find().skip(skip).limit(limit), // Fetch semesters with pagination
+    Course.countDocuments(), // Count total semesters
+  ]);
+
+  const totalPages = Math.ceil(totalCount / limit);
+
+  return {
+    data,
+    totalPages,
+    currentPage: page,
+  };
 };
 const detailCourse = async (id) => {
   try {

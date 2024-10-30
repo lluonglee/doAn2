@@ -20,8 +20,18 @@ const departmentController = {
   },
   getAllDepartment: async (req, res) => {
     try {
-      const getAll = await DepartmentService.getAllDepartment();
-      return res.status(200).json(getAll);
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 5;
+
+      const { data, totalPages, currentPage } =
+        await DepartmentService.getAllDepartment(page, limit);
+
+      res.status(200).json({
+        status: "OK",
+        data,
+        currentPage,
+        totalPages,
+      });
     } catch (err) {
       return {
         status: "ERR",
@@ -104,14 +114,16 @@ const departmentController = {
   assignDepartmentToTeacher: async (req, res) => {
     const { departmentId, teacherId } = req.body;
     try {
-      const result = await DepartmentService.assignDepartmentToTeacher(departmentId, teacherId);
+      const result = await DepartmentService.assignDepartmentToTeacher(
+        departmentId,
+        teacherId
+      );
       res.status(200).json(result);
     } catch (error) {
       return res.status(404).json({
         error: error.message,
       });
     }
-
   },
 };
 module.exports = departmentController;

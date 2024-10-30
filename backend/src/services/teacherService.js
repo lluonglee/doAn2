@@ -43,13 +43,20 @@ const createTeacher = async (newTeacher) => {
 };
 
 //get all teacher
-const getAllTeacher = async () => {
+const getAllTeacher = async (page, limit) => {
   try {
-    const getAll = await Teacher.find().populate('department');
+    const skip = (page - 1) * limit;
+    // const getAll = await Teacher.find().populate("department");
+    const [data, totalCount] = await Promise.all([
+      Teacher.find().populate("department").skip(skip).limit(limit), // Fetch semesters with pagination
+      Teacher.countDocuments(), // Count total semesters
+    ]);
+    const totalPages = Math.ceil(totalCount / limit);
+
     return {
-      status: "OK",
-      message: "Get all teacher successful",
-      data: getAll,
+      data,
+      totalPages,
+      currentPage: page,
     };
   } catch (error) {
     return {

@@ -8,6 +8,10 @@ export default function Page() {
   const [classTimes, setClassTimes] = useState([]);
   const [selectedClassTime, setSelectedClassTime] = useState(null);
   const [isDelete, setDelete] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1); // State to track the current page
+  const [totalPages, setTotalPages] = useState(1); // State to track the total number of pages
+  const limit = 5; // Number of items per page
+
   // Hàm để mở modal thêm mới
   const openModal = () => {
     setSelectedClassTime(null);
@@ -24,12 +28,16 @@ export default function Page() {
   const closeModal = () => setIsOpen(false);
 
   // Hàm để lấy danh sách ca học từ API
-  const fetchClassTimes = async () => {
+  const fetchClassTimes = async (page = 1) => {
     try {
-      const res = await fetch("http://localhost:5000/api/time/get-all");
+      const res = await fetch(
+        `http://localhost:5000/api/time/get-all?page=${page}&limit=${limit}`
+      );
       const data = await res.json();
       if (res.ok && data.status === "OK") {
         setClassTimes(data.data);
+        setCurrentPage(data.currentPage); // Update current page from response
+        setTotalPages(data.totalPages);
       } else {
         console.error("Failed to fetch class times:", data.message);
       }
@@ -42,12 +50,15 @@ export default function Page() {
   const deleteClassTime = async (id) => {
     if (confirm("Bạn có chắc chắn muốn xóa Ca Học này không?")) {
       try {
-        const res = await fetch(`http://localhost:5000/api/time/delete-time/${id}`, {
-          method: "DELETE",
-        });
+        const res = await fetch(
+          `http://localhost:5000/api/time/delete-time/${id}`,
+          {
+            method: "DELETE",
+          }
+        );
         const data = await res.json();
         if (res.ok && data.success) {
-          fetchClassTimes(); // Cập nhật danh sách sau khi xóa thành công
+          fetchClassTimes(currentPage); // Cập nhật danh sách sau khi xóa thành công
         } else {
           console.error("Failed to delete class time:", data.message);
         }
@@ -58,8 +69,8 @@ export default function Page() {
   };
 
   useEffect(() => {
-    fetchClassTimes();
-  }, [isOpen, isDelete]);
+    fetchClassTimes(currentPage);
+  }, [isOpen, isDelete, currentPage]);
 
   return (
     <div>
@@ -84,17 +95,33 @@ export default function Page() {
         <table className="w-full text-sm text-gray-500 dark:text-gray-400 align-middle text-center">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" className="px-6 py-3">Tên ca học</th>
-              <th scope="col" className="px-6 py-3">Buổi</th>
-              <th scope="col" className="px-6 py-3">Thời gian</th>
-              <th scope="col" className="px-6 py-3">Ghi chú</th>
-              <th scope="col" className="px-6 py-3">Thao tác</th>
+              <th scope="col" className="px-6 py-3">
+                Tên ca học
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Buổi
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Thời gian
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Ghi chú
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Thao tác
+              </th>
             </tr>
           </thead>
           <tbody>
             {classTimes.map((classTime) => (
-              <tr key={classTime._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+              <tr
+                key={classTime._id}
+                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+              >
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
                   {classTime.tenCa}
                 </th>
                 <td className="px-6 py-4">{classTime.buoi}</td>
@@ -109,8 +136,8 @@ export default function Page() {
                     Edit
                   </a>
                   <Trash2
-                    className="cursor-pointer"
-                    onClick={() =>{
+                    className="cursor-pointer text-red-600"
+                    onClick={() => {
                       setDelete(!isDelete);
                       return deleteClassTime(classTime._id);
                     }}
@@ -121,8 +148,33 @@ export default function Page() {
           </tbody>
         </table>
       </div>
-
-      {isOpen && <ModalCaHoc closeModal={closeModal} classTime={selectedClassTime} />}
+      {/* Pagination Controls */}
+      {
+        <div className="flex justify-center items-center mt-4">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            className="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2 disabled:opacity-50"
+            disabled={currentPage === 1}
+          >
+            Previous
+          </button>
+          <span className="text-gray-600">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            className="bg-gray-500 text-white px-4 py-2 rounded-lg ml-2 disabled:opacity-50"
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      }
+      {isOpen && (
+        <ModalCaHoc closeModal={closeModal} classTime={selectedClassTime} />
+      )}
     </div>
   );
 }
