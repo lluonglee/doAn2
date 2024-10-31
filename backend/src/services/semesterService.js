@@ -30,12 +30,12 @@ const createSemester = async (newSemester) => {
   }
 };
 
-const getAllSemesters = async (page, limit) => {
+const getAllSemesters = async (page, limit, search) => {
   const skip = (page - 1) * limit;
-
+  const searchFilter = search ? { nam_hoc: new RegExp(search, "i") } : {}; // Case-insensitive search for 'ten'
   const [data, totalCount] = await Promise.all([
-    Semester.find().skip(skip).limit(limit), // Fetch semesters with pagination
-    Semester.countDocuments(), // Count total semesters
+    Semester.find(searchFilter).skip(skip).limit(limit), // Fetch semesters with pagination
+    Semester.countDocuments(searchFilter), // Count total semesters
   ]);
 
   const totalPages = Math.ceil(totalCount / limit);

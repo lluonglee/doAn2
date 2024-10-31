@@ -37,9 +37,9 @@ const courseController = {
     try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 5;
-
+      const search = req.query.search || ""; // Get the search query from the request
       const { data, totalPages, currentPage } =
-        await CourseService.getAllCourse(page, limit);
+        await CourseService.getAllCourse(page, limit, search);
 
       res.status(200).json({
         status: "OK",

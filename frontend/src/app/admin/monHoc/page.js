@@ -9,6 +9,7 @@ export default function MonHoc() {
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const pageSize = 5; // Adjust as needed
 
   const openModal = () => {
@@ -23,10 +24,10 @@ export default function MonHoc() {
 
   const closeModal = () => setIsOpen(false);
 
-  const fetchSubjects = async () => {
+  const fetchSubjects = async (query = "") => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/subject/getAll-subject?page=${currentPage}&limit=${pageSize}`
+        `http://localhost:5000/api/subject/getAll-subject?page=${currentPage}&limit=${pageSize}&search=${query}`
       );
       const data = await res.json();
       if (data.status === "OK") {
@@ -41,9 +42,9 @@ export default function MonHoc() {
   };
 
   useEffect(() => {
-    fetchSubjects(); // Fetch subjects when the component mounts or page changes
+    fetchSubjects(searchQuery); // Fetch subjects when the component mounts or page changes
     console.log(currentPage);
-  }, [isOpen, currentPage]);
+  }, [isOpen, currentPage, searchQuery]);
 
   const deleteSubject = async (subjectId) => {
     if (!window.confirm("Are you sure you want to delete this subject?"))
@@ -58,7 +59,7 @@ export default function MonHoc() {
       const data = await res.json();
       if (data.success) {
         alert("Subject deleted successfully!");
-        fetchSubjects(currentPage); // Refetch the subjects to update the list
+        fetchSubjects(currentPage, searchQuery); // Refetch the subjects to update the list
       } else {
         alert("Failed to delete subject: " + data.message);
       }
@@ -81,7 +82,11 @@ export default function MonHoc() {
       fetchSubjects();
     }
   };
-
+  // hàm search
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to the first page on new search
+  };
   return (
     <div>
       <h2 className="text-slate-700 text-2xl">Danh sách môn học</h2>
@@ -93,6 +98,14 @@ export default function MonHoc() {
         >
           Thêm mới
         </button>
+        {/** tìm kiếm */}
+        <input
+          type="text"
+          placeholder="Tìm kiếm tên môn..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="border rounded-lg px-3 py-1 mb-3 ml-3"
+        />
       </div>
 
       <div className="relative overflow-x-auto shadow-md ml-3 mr-3">

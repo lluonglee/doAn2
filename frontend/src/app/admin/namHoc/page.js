@@ -12,6 +12,7 @@ export default function MonHoc() {
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const limit = 5;
   const openModal = () => {
     setSelectedSemester(null);
@@ -31,10 +32,10 @@ export default function MonHoc() {
 
   const closeSecondModal = () => setIsSecondModalOpen(false);
 
-  const fetchSemester = async (page = 1) => {
+  const fetchSemester = async (page = 1, query = "") => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/semester/get-all?page=${page}&limit=${limit}`
+        `http://localhost:5000/api/semester/get-all?page=${page}&limit=${limit}&search=${query}`
       );
       const data = await res.json();
       if (data.status === "OK") {
@@ -61,7 +62,7 @@ export default function MonHoc() {
       const data = await res.json();
       if (data.success) {
         alert("Semester deleted successfully!");
-        fetchSemester(currentPage); // Refresh semester list on current page
+        fetchSemester(currentPage, searchQuery); // Refresh semester list on current page
       } else {
         alert("Failed to delete semester: " + data.message);
       }
@@ -70,10 +71,14 @@ export default function MonHoc() {
       alert("Failed to delete semester.");
     }
   };
-
+  // hàm search
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to the first page on new search
+  };
   useEffect(() => {
-    fetchSemester(currentPage);
-  }, [isOpen, isSecondModalOpen, currentPage]);
+    fetchSemester(currentPage, searchQuery);
+  }, [isOpen, isSecondModalOpen, currentPage, searchQuery]);
 
   return (
     <div>
@@ -94,6 +99,14 @@ export default function MonHoc() {
           >
             Thêm vào Lớp học phần
           </button>
+          {/** tìm kiếm */}
+          <input
+            type="text"
+            placeholder="Tìm kiếm năm học..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="border rounded-lg px-3 py-1 mb-3 ml-3"
+          />
         </div>
       </div>
 

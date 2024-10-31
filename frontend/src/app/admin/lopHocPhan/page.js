@@ -10,6 +10,7 @@ export default function LopHocPhan() {
   const [isDelete, setDelete] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const [limit] = useState(5); // Number of courses per page
 
   // Hàm để mở modal
@@ -22,10 +23,10 @@ export default function LopHocPhan() {
   const closeModal = () => setIsOpen(false);
 
   // Fetch courses data from the backend
-  const fetchCourses = async (page = 1) => {
+  const fetchCourses = async (page = 1, query = "") => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/course/get-all?page=${page}&limit=${limit}`
+        `http://localhost:5000/api/course/get-all?page=${page}&limit=${limit}&search=${query}`
       );
       const data = await res.json();
       if (data.status === "OK") {
@@ -39,10 +40,14 @@ export default function LopHocPhan() {
       console.error("Error fetching Courses:", error);
     }
   };
-
+  // hàm search
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to the first page on new search
+  };
   useEffect(() => {
-    fetchCourses(currentPage); // Fetch courses on component mount or when page changes
-  }, [isOpen, isDelete, currentPage]); // Re-fetch when modal is closed or currentPage changes
+    fetchCourses(currentPage, searchQuery); // Fetch courses on component mount or when page changes
+  }, [isOpen, isDelete, currentPage, searchQuery]); // Re-fetch when modal is closed or currentPage changes
 
   // Function to delete a course
   const deleteCourse = async (courseId) => {
@@ -60,7 +65,7 @@ export default function LopHocPhan() {
         const data = await response.json();
         if (data.status === "OK") {
           alert("Course deleted successfully!");
-          fetchCourses(currentPage); // Refresh the courses list
+          fetchCourses(currentPage, searchQuery); // Refresh the courses list
         } else {
           alert("Failed to delete course: " + data.message);
         }
@@ -104,12 +109,14 @@ export default function LopHocPhan() {
           >
             Thêm mới
           </button>
-          <button
-            type="button"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-          >
-            Tìm kiếm
-          </button>
+          {/** tìm kiếm */}
+          <input
+            type="text"
+            placeholder="Tìm kiếm lớp học phần..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="border rounded-lg px-3 py-1 mb-3 ml-3"
+          />
         </div>
       </div>
 

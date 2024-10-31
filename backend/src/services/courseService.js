@@ -50,12 +50,14 @@ const createCourse = async (newCourse) => {
     };
   }
 };
-const getAllCourse = async (page, limit) => {
+const getAllCourse = async (page, limit, search) => {
   const skip = (page - 1) * limit;
-
+  const searchFilter = search
+    ? { ma_lop_hoc_phan: new RegExp(search, "i") }
+    : {}; // Case-insensitive search for 'ten'
   const [data, totalCount] = await Promise.all([
-    Course.find().skip(skip).limit(limit), // Fetch semesters with pagination
-    Course.countDocuments(), // Count total semesters
+    Course.find(searchFilter).skip(skip).limit(limit), // Fetch semesters with pagination
+    Course.countDocuments(searchFilter), // Count total semesters
   ]);
 
   const totalPages = Math.ceil(totalCount / limit);

@@ -34,11 +34,12 @@ const CreateSubject = async (newSubject) => {
     };
   }
 };
-const getAllSubject = async ({ page, limit }) => {
+const getAllSubject = async ({ page, limit, search }) => {
   try {
     const skip = (page - 1) * limit;
-    const subjects = await Subject.find().skip(skip).limit(limit);
-    const totalSubjects = await Subject.countDocuments(); // Total count
+    const searchFilter = search ? { ten_mon: new RegExp(search, "i") } : {}; // Case-insensitive search for 'ten'
+    const subjects = await Subject.find(searchFilter).skip(skip).limit(limit);
+    const totalSubjects = await Subject.countDocuments(searchFilter); // Total count
     // console.log("Fetching subjects:", { page, limit, skip, subjects });
     return {
       status: "OK",

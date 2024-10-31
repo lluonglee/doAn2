@@ -22,9 +22,9 @@ const departmentController = {
     try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 5;
-
+      const search = req.query.search || ""; // Get the search query from the request
       const { data, totalPages, currentPage } =
-        await DepartmentService.getAllDepartment(page, limit);
+        await DepartmentService.getAllDepartment(page, limit, search);
 
       res.status(200).json({
         status: "OK",

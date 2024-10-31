@@ -13,6 +13,7 @@ export default function KhoaChuyenMon() {
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1); // State to track the current page
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const limit = 5; // Number of items per page
 
   // Hàm để mở modal (for creating or updating)
@@ -34,10 +35,10 @@ export default function KhoaChuyenMon() {
   const closeSecondModal = () => setIsSecondModalOpen(false);
 
   // Fetch departments from API
-  const fetchDepartments = async (page = 1) => {
+  const fetchDepartments = async (page = 1, query = "") => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/department/get-all?page=${page}&limit=${limit}`
+        `http://localhost:5000/api/department/get-all?page=${page}&limit=${limit}&search=${query}`
       );
       const data = await response.json();
       if (response.ok) {
@@ -64,7 +65,7 @@ export default function KhoaChuyenMon() {
       const data = await response.json();
       if (data.status === "OK") {
         alert("Department deleted successfully");
-        fetchDepartments(currentPage); // Refetch departments after deletion
+        fetchDepartments(currentPage, searchQuery); // Refetch departments after deletion
       } else {
         alert("Failed to delete department: " + data.message);
       }
@@ -73,10 +74,14 @@ export default function KhoaChuyenMon() {
       alert("Failed to delete department");
     }
   };
-
+  // hàm search
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to the first page on new search
+  };
   useEffect(() => {
-    fetchDepartments(currentPage); // Fetch departments when component mounts or modal closes
-  }, [isOpen, isDelete, currentPage]);
+    fetchDepartments(currentPage, searchQuery); // Fetch departments when component mounts or modal closes
+  }, [isOpen, isDelete, currentPage, searchQuery]);
 
   return (
     <div>
@@ -97,6 +102,14 @@ export default function KhoaChuyenMon() {
           >
             Thêm Giảng viên
           </button>
+          {/** tìm kiếm */}
+          <input
+            type="text"
+            placeholder="Tìm kiếm khoa..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="border rounded-lg px-3 py-1 mb-3 ml-3"
+          />
         </div>
       </div>
 
