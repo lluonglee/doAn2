@@ -23,20 +23,21 @@ const createClassTime = async (newClassTime) => {
   }
 };
 
-const getAllClassTimes = async () => {
-  try {
-    const classTimes = await ClassTime.find(); // Lấy toàn bộ dữ liệu ca học
-    return {
-      status: "OK",
-      message: "Get all class times successful",
-      data: classTimes,
-    };
-  } catch (error) {
-    return {
-      status: "ERR",
-      message: error.message,
-    };
-  }
+const getAllClassTimes = async (page, limit) => {
+  const skip = (page - 1) * limit;
+
+  const [data, totalCount] = await Promise.all([
+    ClassTime.find().skip(skip).limit(limit), // Fetch semesters with pagination
+    ClassTime.countDocuments(), // Count total semesters
+  ]);
+
+  const totalPages = Math.ceil(totalCount / limit);
+
+  return {
+    data,
+    totalPages,
+    currentPage: page,
+  };
 };
 
 const getClassTimeById = async (id) => {
@@ -96,7 +97,7 @@ const deleteClassTime = async (id) => {
       };
     }
 
-      await ClassTime.findByIdAndDelete(classTimeID);
+    await ClassTime.findByIdAndDelete(classTimeID);
     return {
       status: "Ok",
       message: "Delete class time successful",

@@ -1,5 +1,5 @@
 const Department = require("../models/departmentModel");
-const Teacher = require("../models/teacherModels")
+const Teacher = require("../models/teacherModels");
 
 const createDepartment = async (newDepartment) => {
   const { ma_khoa, ten_khoa, ghi_chu } = newDepartment;
@@ -30,20 +30,21 @@ const createDepartment = async (newDepartment) => {
     };
   }
 };
-const getAllDepartment = async () => {
-  try {
-    const getAll = await Department.find();
-    return {
-      status: "OK",
-      message: "get all Department Successful",
-      data: getAll,
-    };
-  } catch (err) {
-    return {
-      status: "ERR",
-      message: err.message,
-    };
-  }
+const getAllDepartment = async (page, limit, search) => {
+  const skip = (page - 1) * limit;
+  const searchFilter = search ? { ten_khoa: new RegExp(search, "i") } : {}; // Case-insensitive search for 'ten'
+  const [data, totalCount] = await Promise.all([
+    Department.find(searchFilter).skip(skip).limit(limit), // Fetch semesters with pagination
+    Department.countDocuments(searchFilter), // Count total semesters
+  ]);
+
+  const totalPages = Math.ceil(totalCount / limit);
+
+  return {
+    data,
+    totalPages,
+    currentPage: page,
+  };
 };
 // const detailDepartment = async (id) => {
 //   try {
@@ -71,7 +72,9 @@ const getAllDepartment = async () => {
 
 const detailDepartment = async (id) => {
   try {
-    const depart = await Department.findById(id).populate('giang_vien_trong_khoa'); // Populate teacher details
+    const depart = await Department.findById(id).populate(
+      "giang_vien_trong_khoa"
+    ); // Populate teacher details
 
     if (!depart) {
       return {
@@ -142,23 +145,22 @@ const deleteDepartment = async (id) => {
   }
 };
 
-
-const assignDepartmentToTeacher = async (departmentId, teacherId) =>{
-  try{
+const assignDepartmentToTeacher = async (departmentId, teacherId) => {
+  try {
     const department = await Department.findById(departmentId);
-    if(!department){
-      return{
+    if (!department) {
+      return {
         status: "ERR",
-        message:"can not find department"
-      }
+        message: "can not find department",
+      };
     }
 
     const teacher = await Teacher.findById(teacherId);
-    if(!teacher){
-      return{
-        status:"ERR",
-        message:"can't not find teacher"
-      }
+    if (!teacher) {
+      return {
+        status: "ERR",
+        message: "can't not find teacher",
+      };
     }
 
     teacher.department = department._id;
@@ -167,29 +169,23 @@ const assignDepartmentToTeacher = async (departmentId, teacherId) =>{
     department.giang_vien_trong_khoa.push(teacher._id);
     await department.save();
 
-
     return {
-      status:"OK",
+      status: "OK",
       message: "assign successful",
-      data: department
-    }
-
-
-
-  }catch(error){
-
+      data: department,
+    };
+  } catch (error) {
     return {
       status: "ERR",
       message: error.message,
     };
-
   }
-}
+};
 module.exports = {
   createDepartment,
   getAllDepartment,
   detailDepartment,
   updateDepartment,
   deleteDepartment,
-  assignDepartmentToTeacher
+  assignDepartmentToTeacher,
 };

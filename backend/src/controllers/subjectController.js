@@ -32,7 +32,14 @@ const subjectController = {
   },
   getAllSubject: async (req, res) => {
     try {
-      const getAll = await SubjectService.getAllSubject();
+      const page = parseInt(req.query.page) || 1; // Default page 1
+      const limit = parseInt(req.query.limit) || 5; // Default limit 10
+      const search = req.query.search || ""; // Get the search query from the request
+      const getAll = await SubjectService.getAllSubject({
+        page,
+        limit,
+        search,
+      });
       return res.status(200).json(getAll);
     } catch (err) {
       return {

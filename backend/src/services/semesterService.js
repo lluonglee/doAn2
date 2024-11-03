@@ -30,20 +30,21 @@ const createSemester = async (newSemester) => {
   }
 };
 
-const getAllSemesters = async () => {
-  try {
-    const getAll = await Semester.find();
-    return {
-      status: "OK",
-      message: "Get all Semesters Successful",
-      data: getAll,
-    };
-  } catch (err) {
-    return {
-      status: "ERR",
-      message: err.message,
-    };
-  }
+const getAllSemesters = async (page, limit, search) => {
+  const skip = (page - 1) * limit;
+  const searchFilter = search ? { nam_hoc: new RegExp(search, "i") } : {}; // Case-insensitive search for 'ten'
+  const [data, totalCount] = await Promise.all([
+    Semester.find(searchFilter).skip(skip).limit(limit), // Fetch semesters with pagination
+    Semester.countDocuments(searchFilter), // Count total semesters
+  ]);
+
+  const totalPages = Math.ceil(totalCount / limit);
+
+  return {
+    data,
+    totalPages,
+    currentPage: page,
+  };
 };
 
 const detailSemester = async (id) => {

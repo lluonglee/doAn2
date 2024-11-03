@@ -8,7 +8,11 @@ export default function GiangVien() {
   const [teachers, setTeachers] = useState([]);
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [isDelete, setDelete] = useState(false);
-  const [excelFile, setExcelFile] = useState(null); // State lưu file Excel
+  const [excelFile, setExcelFile] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
+  const limit = 5;
 
   const openModal = () => {
     setSelectedTeacher(null);
@@ -22,13 +26,17 @@ export default function GiangVien() {
 
   const closeModal = () => setIsOpen(false);
 
-  // Hàm fetch danh sách giảng viên từ backend
-  const fetchTeachers = async () => {
+  const fetchTeachers = async (page = 1, query = "") => {
     try {
-      const res = await fetch("http://localhost:5000/api/teacher/get-all");
+      //console.log(query);
+      const res = await fetch(
+        `http://localhost:5000/api/teacher/get-all?page=${page}&limit=${limit}&search=${query}`
+      );
       const data = await res.json();
       if (res.ok && data.status === "OK") {
         setTeachers(data.data);
+        setCurrentPage(data.currentPage);
+        setTotalPages(data.totalPages);
       } else {
         console.error("Failed to fetch teachers:", data.message);
       }
@@ -37,7 +45,6 @@ export default function GiangVien() {
     }
   };
 
-  // Hàm xóa giảng viên
   const deleteTeacher = async (id) => {
     if (confirm("Bạn có chắc chắn muốn xóa giảng viên này không?")) {
       try {
@@ -49,7 +56,7 @@ export default function GiangVien() {
         );
         const data = await res.json();
         if (res.ok && data.success) {
-          setTeachers(teachers.filter((teacher) => teacher._id !== id)); // Cập nhật lại danh sách sau khi xóa
+          setTeachers(teachers.filter((teacher) => teacher._id !== id));
           alert("Giảng viên đã được xóa thành công!");
         } else {
           console.error("Failed to delete teacher:", data.message);
@@ -60,7 +67,11 @@ export default function GiangVien() {
     }
   };
 
-  // Hàm upload file Excel
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to the first page on new search
+  };
+
   const handleExcelUpload = async () => {
     if (!excelFile) {
       alert("Vui lòng chọn một file Excel");
@@ -79,7 +90,7 @@ export default function GiangVien() {
       const data = await res.json();
       if (res.ok && data.status === "OK") {
         alert("File Excel đã được import thành công!");
-        fetchTeachers(); // Cập nhật lại danh sách giảng viên sau khi import
+        fetchTeachers(currentPage, searchQuery);
       } else {
         alert("Import file thất bại: " + data.message);
       }
@@ -89,8 +100,8 @@ export default function GiangVien() {
   };
 
   useEffect(() => {
-    fetchTeachers(); 
-  }, [isOpen, isDelete]); 
+    fetchTeachers(currentPage, searchQuery);
+  }, [isOpen, isDelete, currentPage, searchQuery]);
 
   return (
     <div>
@@ -105,7 +116,6 @@ export default function GiangVien() {
             Thêm mới
           </button>
           <input
-            
             type="file"
             accept=".xlsx, .xls"
             onChange={(e) => setExcelFile(e.target.files[0])}
@@ -118,69 +128,94 @@ export default function GiangVien() {
           >
             Import Excel
           </button>
+          {/** tìm kiếm */}
+          <input
+            type="text"
+            placeholder="Tìm kiếm giảng viên..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="border rounded-lg px-3 py-1 mb-3 ml-3"
+          />
         </div>
       </div>
 
-      <div>
-        <div className="relative overflow-x-auto shadow-md ml-3 mr-3">
-          <table className="w-full text-sm text-gray-500 dark:text-gray-400 align-middle text-center">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-              <tr>
-                <th scope="col" className="px-6 py-3">
-                  Tên giảng viên
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Email
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Khoa chuyên môn
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Ghi chú
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Thao tác
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {teachers.map((teacher) => (
-                <tr
-                  key={teacher._id}
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                >
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+      {/* Table Display */}
+      <div className="relative overflow-x-auto shadow-md ml-3 mr-3">
+        <table className="w-full text-sm text-gray-500 dark:text-gray-400 align-middle text-center">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                Tên giảng viên
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Email
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Khoa chuyên môn
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Ghi chú
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Thao tác
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {teachers.map((teacher) => (
+              <tr
+                key={teacher._id}
+                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+              >
+                <td className="px-6 py-4">{teacher.ten}</td>
+                <td className="px-6 py-4">{teacher.email}</td>
+                <td className="px-6 py-4">
+                  {teacher.department?.ten_khoa || "Không có khoa"}
+                </td>
+                <td className="px-6 py-4">{teacher.ghi_chu}</td>
+                <td className="px-6 py-4 flex gap-5 justify-center">
+                  <a
+                    href="#"
+                    className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                    onClick={() => openEditModal(teacher)}
                   >
-                    {teacher.ten}
-                  </th>
-                  <td className="px-6 py-4">{teacher.email}</td>
-                  <td className="px-6 py-4">
-                    {teacher.department?.ten_khoa || "Không có khoa"}
-                  </td>
-                  <td className="px-6 py-4">{teacher.ghi_chu}</td>
-                  <td className="px-6 py-4 flex gap-5 justify-center">
-                    <a
-                      href="#"
-                      className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                      onClick={() => openEditModal(teacher)}
-                    >
-                      Edit
-                    </a>
-                    <Trash2
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setDelete(!isDelete);
-                        return deleteTeacher(teacher._id);
-                      }}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    Edit
+                  </a>
+                  <Trash2
+                    className="cursor-pointer text-red-600"
+                    onClick={() => {
+                      setDelete(!isDelete);
+                      return deleteTeacher(teacher._id);
+                    }}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex justify-center items-center mt-4">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          className="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2 disabled:opacity-50"
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span className="text-gray-600">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          className="bg-gray-500 text-white px-4 py-2 rounded-lg ml-2 disabled:opacity-50"
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
 
       {isOpen && (

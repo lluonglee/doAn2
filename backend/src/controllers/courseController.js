@@ -8,7 +8,7 @@ const courseController = {
         si_so,
         so_tiet_truc_tiep,
         so_tiet_tong,
-        loai_mon_hoc,    
+        loai_mon_hoc,
         tkb,
       } = req.body;
       if (
@@ -35,8 +35,18 @@ const courseController = {
   },
   getAllCourse: async (req, res) => {
     try {
-      const getAll = await CourseService.getAllCourse();
-      return res.status(200).json(getAll);
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 5;
+      const search = req.query.search || ""; // Get the search query from the request
+      const { data, totalPages, currentPage } =
+        await CourseService.getAllCourse(page, limit, search);
+
+      res.status(200).json({
+        status: "OK",
+        data,
+        currentPage,
+        totalPages,
+      });
     } catch (err) {
       return {
         status: "ERR",
@@ -127,7 +137,10 @@ const courseController = {
   assignDepartment: async (req, res) => {
     const { departmentId, courseId } = req.body;
     try {
-      const result = await CourseService.assignDepartment(departmentId, courseId);
+      const result = await CourseService.assignDepartment(
+        departmentId,
+        courseId
+      );
       res.status(200).json(result);
     } catch (error) {
       return res.status(404).json({

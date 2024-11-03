@@ -8,6 +8,11 @@ export default function LopHocPhan() {
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isDelete, setDelete] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
+  const [limit] = useState(5); // Number of courses per page
+
   // Hàm để mở modal
   const openModal = (course = null) => {
     setSelectedCourse(course);
@@ -18,12 +23,16 @@ export default function LopHocPhan() {
   const closeModal = () => setIsOpen(false);
 
   // Fetch courses data from the backend
-  const fetchCourses = async () => {
+  const fetchCourses = async (page = 1, query = "") => {
     try {
-      const res = await fetch("http://localhost:5000/api/course/get-all");
+      const res = await fetch(
+        `http://localhost:5000/api/course/get-all?page=${page}&limit=${limit}&search=${query}`
+      );
       const data = await res.json();
       if (data.status === "OK") {
         setCourses(data.data);
+        setTotalPages(data.totalPages); // Set total pages from the response
+        setCurrentPage(data.currentPage); // Set the current page
       } else {
         console.error("Failed to fetch Courses:", data.message);
       }
@@ -31,10 +40,14 @@ export default function LopHocPhan() {
       console.error("Error fetching Courses:", error);
     }
   };
-
+  // hàm search
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to the first page on new search
+  };
   useEffect(() => {
-    fetchCourses(); // Fetch courses on component mount
-  }, [isOpen, isDelete]); // Re-fetch when modal is closed
+    fetchCourses(currentPage, searchQuery); // Fetch courses on component mount or when page changes
+  }, [isOpen, isDelete, currentPage, searchQuery]); // Re-fetch when modal is closed or currentPage changes
 
   // Function to delete a course
   const deleteCourse = async (courseId) => {
@@ -52,7 +65,7 @@ export default function LopHocPhan() {
         const data = await response.json();
         if (data.status === "OK") {
           alert("Course deleted successfully!");
-          fetchCourses(); // Refresh the courses list
+          fetchCourses(currentPage, searchQuery); // Refresh the courses list
         } else {
           alert("Failed to delete course: " + data.message);
         }
@@ -71,6 +84,19 @@ export default function LopHocPhan() {
       .join(", ");
   };
 
+  // Pagination handlers
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
   return (
     <div>
       <div>
@@ -83,12 +109,14 @@ export default function LopHocPhan() {
           >
             Thêm mới
           </button>
-          <button
-            type="button"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-          >
-            Tìm kiếm
-          </button>
+          {/** tìm kiếm */}
+          <input
+            type="text"
+            placeholder="Tìm kiếm lớp học phần..."
+            value={searchQuery}
+            onChange={handleSearch}
+            className="border rounded-lg px-3 py-1 mb-3 ml-3"
+          />
         </div>
       </div>
 
@@ -146,7 +174,7 @@ export default function LopHocPhan() {
                       Edit
                     </a>
                     <Trash2
-                      className="cursor-pointer"
+                      className="cursor-pointer  text-red-600"
                       onClick={() => {
                         setDelete(!isDelete);
                         return deleteCourse(course._id);
@@ -158,6 +186,29 @@ export default function LopHocPhan() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Pagination controls */}
+      <div className="flex justify-center items-center mt-4">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          className="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2 disabled:opacity-50"
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span className="text-gray-600">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          className="bg-gray-500 text-white px-4 py-2 rounded-lg ml-2 disabled:opacity-50"
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
 
       {/* Gọi modal */}

@@ -21,8 +21,18 @@ const semesterController = {
 
   getAllSemesters: async (req, res) => {
     try {
-      const getAll = await semesterService.getAllSemesters();
-      return res.status(200).json(getAll);
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 5;
+      const search = req.query.search || ""; // Get the search query from the request
+      const { data, totalPages, currentPage } =
+        await semesterService.getAllSemesters(page, limit, search);
+
+      res.status(200).json({
+        status: "OK",
+        data,
+        currentPage,
+        totalPages,
+      });
     } catch (err) {
       return res.status(500).json({
         status: "ERR",
@@ -110,16 +120,13 @@ const semesterController = {
     try {
       const result = await semesterService.assignSemester(semesterId, courseId);
       res.status(200).json(result);
-      console.log(result)
+      console.log(result);
     } catch (error) {
       return res.status(404).json({
         error: error.message,
       });
     }
   },
-  
-
-
 };
 
 module.exports = semesterController;
