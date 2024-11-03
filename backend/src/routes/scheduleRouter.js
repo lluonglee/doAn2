@@ -4,8 +4,8 @@ const scheduleController = require("../controllers/scheduleController")
 
 router.post("/create-schedule",scheduleController.createSchedule)
 router.get("/get-all", scheduleController.getAllSchedule)
-// router.get("/detail-department/:id", departmentController.getDetailDepartment)
-// router.put("/update-department/:id", departmentController.updateDepartment)
-// router.delete("/delete-department/:id", departmentController.deleteDepartment)
+router.get("/detail-schedule/:id", scheduleController.getDetailSchedule)
+router.put("/update-schedule/:id", scheduleController.updateSchedule)
+router.delete("/delete-schedule/:id", scheduleController.deleteSchedule)
 
 module.exports = router

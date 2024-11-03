@@ -3,8 +3,8 @@ const classTimeService = require("../services/classTimeService");
 const classTimeController = {
   createClassTime: async (req, res) => {
     try {
-      const { tenCa, buoi, thoiGian, ghi_chu } = req.body;
-      if (!tenCa || !buoi || !thoiGian || !ghi_chu) {
+      const { tenCa, buoi, thoiGian } = req.body;
+      if (!tenCa || !buoi || !thoiGian ) {
         return res.status(400).json({
           status: "ERR",
           message: "The input is required",

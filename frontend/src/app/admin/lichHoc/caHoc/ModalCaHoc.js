@@ -104,6 +104,7 @@ export default function ModalCaHoc({ closeModal, classTime }) {
                 </svg>
                 <span className="sr-only">Close modal</span>
               </button>
+              
             </div>
 
             <form className="p-4 md:p-5" onSubmit={handleSubmit}>
