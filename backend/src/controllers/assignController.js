@@ -31,13 +31,14 @@ const assignController = {
   },
 
   assignClassRoomToSchedule: async (req, res) => {
-    const { courseId, classRoomId, classTimeId, scheduleId } = req.body;
+    const { courseId, classRoomId, classTimeId, scheduleId, teacherId } = req.body;
     try {
       const result = await ScheduleService.assignClassRoomToSchedule(
         courseId,
         classRoomId,
         classTimeId,
-        scheduleId
+        scheduleId,
+        teacherId
       );
       res.status(200).json(result);
     } catch (error) {

@@ -68,65 +68,31 @@ const assignClassTimeToSchedule = async (classTimeId, scheduleId) => {
     };
   }
 };
-// const assignClassRoomToSchedule = async (classRoomId, classTimeId, scheduleId) => {
-//   try {
-//     const classRoom = await ClassRoom.findById(classRoomId);
-//     if (!classRoom) {
-//       return { status: "ERR", message: "Cannot find class room" };
-//     }
 
-//     const schedule = await Schedule.findById(scheduleId);
-//     if (!schedule) {
-//       return { status: "ERR", message: "Cannot find schedule" };
-//     }
-
-//     const hasConflict = schedule.classes.some(cls => cls.classTime && cls.classTime.equals(classTimeId));
-//     if (hasConflict) {
-//       return {
-//         status: "ERR",
-//         message: "Xung đột thời gian lớp học: Ca học đã được phân cho lớp này.",
-//       };
-//     }
-
-//     if (schedule.classes.length > 0) {
-//       schedule.classes[schedule.classes.length - 1].room = classRoom._id;
-//       await schedule.save();
-
-//       return {
-//         status: "OK",
-//         message: "Class room assigned successfully",
-//         data: schedule,
-//       };
-//     } else {
-//       return {
-//         status: "ERR",
-//         message: "No class found to assign class room",
-//       };
-//     }
-//   } catch (error) {
-//     return { status: "ERR", message: error.message };
-//   }
-// };
 const assignClassRoomToSchedule = async (
   courseId,
   classRoomId,
   classTimeId,
-  scheduleId
+  scheduleId,
+  teacherId
 ) => {
   try {
-    // Kiểm tra phòng học có tồn tại không
     const classRoom = await ClassRoom.findById(classRoomId);
     if (!classRoom) {
       return { status: "ERR", message: "Không tìm thấy phòng học" };
     }
 
-    // Kiểm tra lịch có tồn tại không
     const schedule = await Schedule.findById(scheduleId);
     if (!schedule) {
       return { status: "ERR", message: "Không tìm thấy lịch" };
     }
 
-    // Kiểm tra xung đột thời gian cho khung giờ
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) {
+      return { status: "ERR", message: "Không tìm thấy giáo viên" };
+    }
+
+    // Kiểm tra xung đột thời gian cho ca học
     const hasConflict = schedule.classes.some(
       (cls) => cls.classTime && cls.classTime.equals(classTimeId)
     );
@@ -137,19 +103,39 @@ const assignClassRoomToSchedule = async (
       };
     }
 
-    // Thêm lớp mới vào lịch với các thông tin được truyền vào
+    // Kiểm tra xung đột giáo viên
+    const hasTeacherConflict = schedule.classes.some(
+      (cls) =>
+        cls.giang_vien_phu_trach &&
+        cls.giang_vien_phu_trach.equals(teacherId) &&
+        cls.classTime.equals(classTimeId)
+    );
+    if (hasTeacherConflict) {
+      return {
+        status: "ERR",
+        message:
+          "Xung đột giáo viên: Giáo viên này đã có lớp trong ca học này.",
+      };
+    }
+
     schedule.classes.push({
       ma_lop_hoc_phan: courseId,
       classTime: classTimeId,
-      room: classRoomId,
+      rooms: classRoomId,
+      giang_vien_phu_trach: teacherId,
     });
 
-    // Lưu lại lịch đã cập nhật
     await schedule.save();
+
+    // Thêm schedule vào mảng schedules của giáo viên nếu chưa có
+    if (!teacher.schedules.includes(scheduleId)) {
+      teacher.schedules.push(scheduleId);
+      await teacher.save();
+    }
 
     return {
       status: "OK",
-      message: "Class room và class time đã được gán thành công",
+      message: "Class room và class time và teacher đã được gán thành công",
       data: schedule,
     };
   } catch (error) {

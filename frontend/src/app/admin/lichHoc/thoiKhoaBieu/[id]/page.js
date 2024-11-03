@@ -43,9 +43,11 @@ export default function GetDetailDepartment() {
                   <tr>
                     <th scope="col" className="px-6 py-3">Mã học phần</th>
                     <th scope="col" className="px-6 py-3">Sĩ số</th>
-                    <th scope="col" className="px-6 py-3">sĩ số</th>
+                    <th scope="col" className="px-6 py-3">Lý thuyết/Thực hành</th>
                     <th scope="col" className="px-6 py-3">Ca học</th>
-                    <th scope="col" className="px-6 py-3">Giảng viên</th>
+                    <th scope="col" className="px-6 py-3">Phòng học</th>
+                    <th scope="col" className="px-6 py-3">Giảng viên phụ trách</th>
+                   
                    
                   </tr>
                 </thead>
@@ -53,22 +55,27 @@ export default function GetDetailDepartment() {
                   {scheduleDetail.classes.map((classItem) => (
                     <tr key={classItem._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                       <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {classItem.ma_lop_hoc_phan.ma_lop_hoc_phan}
+                        {classItem.ma_lop_hoc_phan?.ma_lop_hoc_phan}
                       </td>
                      
                       <td className="px-6 py-4">
-                        {classItem.ma_lop_hoc_phan.si_so}
+                        {classItem.ma_lop_hoc_phan?.si_so}
                       </td>
                       <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        {classItem.ma_lop_hoc_phan.loai_mon_hoc}
+                        {classItem.ma_lop_hoc_phan?.loai_mon_hoc}
                       </td>
                     
                       <td className="px-6 py-4">
-                        {classItem.classTime.tenCa}
+                        {classItem.classTime?.tenCa}
                       </td>
                       <td className="px-6 py-4">
-                        {classItem.classTime.tenCa}
+                      {classItem.rooms?.room || "không có phòng học"}
                       </td>
+                      <td className="px-6 py-4">
+                      {classItem.giang_vien_phu_trach?.ten || "Chua co giang vien phu trach"}
+                      </td>
+
+                    
                      
                     </tr>
                   ))}

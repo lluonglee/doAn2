@@ -4,29 +4,25 @@ import React, { useState, useEffect } from "react";
 export default function ModalTKB({ closeModal }) {
   const [formData, setFormData] = useState({
     courseId: "",
-    teacherId: "",
     classTimeId: "",
     scheduleId: "",
-    classRoomId: "", // Added room field here
+    classRoomId: "",
+    teacherId: "",
   });
 
   const [courses, setCourses] = useState([]);
   const [teachers, setTeacher] = useState([]);
   const [classTimes, setClassTime] = useState([]);
   const [schedules, setSchedule] = useState([]);
-  const [rooms, setRooms] = useState([]); // Added state for rooms
+  const [rooms, setRooms] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
- 
-  
   useEffect(() => {
-    
-   
     const fetchCourses = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/course/get-all"); // API courses
+        const res = await fetch("http://localhost:5000/api/course/get-all");
         const data = await res.json();
-        setCourses(data.data); // Lưu danh sách khóa học vào state
+        setCourses(data.data);
       } catch (error) {
         console.error("Failed to fetch courses:", error);
       }
@@ -35,9 +31,9 @@ export default function ModalTKB({ closeModal }) {
     //
     const fetchClassTime = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/time/get-all"); 
+        const res = await fetch("http://localhost:5000/api/time/get-all");
         const data = await res.json();
-        setClassTime(data.data); 
+        setClassTime(data.data);
       } catch (error) {
         console.error("Failed to fetch class time:", error);
       }
@@ -45,9 +41,9 @@ export default function ModalTKB({ closeModal }) {
     //
     const fetchSchedule = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/schedule/get-all"); 
+        const res = await fetch("http://localhost:5000/api/schedule/get-all");
         const data = await res.json();
-        setSchedule(data.data); 
+        setSchedule(data.data);
       } catch (error) {
         console.error("Failed to fetch Schedule:", error);
       }
@@ -55,19 +51,26 @@ export default function ModalTKB({ closeModal }) {
 
     const fetchClassRoom = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/room/get-all"); 
+        const res = await fetch("http://localhost:5000/api/room/get-all");
         const data = await res.json();
-        setRooms(data.data); 
+        setRooms(data.data);
       } catch (error) {
-        console.error("Failed to fetch Schedule:", error);
+        console.error("Failed to fetch class Room:", error);
       }
     };
 
-   
+    const fetchTeacher = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/teacher/get-all");
+        const data = await res.json();
+        setTeacher(data.data);
+      } catch (error) {
+        console.error("Failed to fetch teacher:", error);
+      }
+    };
 
-   
-
-    fetchClassRoom()
+    fetchTeacher();
+    fetchClassRoom();
     fetchSchedule();
     fetchClassTime();
     fetchCourses();
@@ -79,54 +82,18 @@ export default function ModalTKB({ closeModal }) {
     if (isSubmitting) return;
     setIsSubmitting(true);
 
-    if (!formData.courseId || !formData.classTimeId || !formData.scheduleId ) {
+    if (
+      !formData.courseId ||
+      !formData.classTimeId ||
+      !formData.scheduleId ||
+      !formData.classRoomId
+    ) {
       alert("Vui lòng chọn Lớp học phần, Ca học, Thời gian, và Phòng học.");
       setIsSubmitting(false);
       return;
     }
 
     try {
-      
-      // const courseLinkResponse = await fetch(
-      //   "http://localhost:5000/api/assign/assign-courseToSchedule",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       courseId: formData.courseId,
-      //       scheduleId: formData.scheduleId,
-      //     }),
-      //   }
-      // );
-      // const courseResult = await courseLinkResponse.json();
-      // if (courseResult.status !== "OK") {
-      //   alert("Lỗi liên kết Khóa học: " + courseResult.message);
-      //   return;
-      // }
-
-      //three api
-
-      // const classTimeLinkResponse = await fetch(
-      //   "http://localhost:5000/api/assign/assign-classTimeToSchedule",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       classTimeId: formData.classTimeId,
-      //       scheduleId: formData.scheduleId,
-      //     }),
-      //   }
-      // );
-      // const  classTimeResult = await classTimeLinkResponse.json();
-      // if (classTimeResult.status !== "OK") {
-      //   alert("Lỗi liên kết với class time: " + classTimeResult.message);
-      //   return;
-      // }
-
       const classRoomLinkResponse = await fetch(
         "http://localhost:5000/api/assign/assign-classRoomToSchedule",
         {
@@ -138,22 +105,23 @@ export default function ModalTKB({ closeModal }) {
             courseId: formData.courseId,
             classRoomId: formData.classRoomId,
             scheduleId: formData.scheduleId,
-            classTimeId: formData.classTimeId
+            classTimeId: formData.classTimeId,
+            teacherId: formData.teacherId
+          
           }),
         }
       );
-      const  classRoomResult = await classRoomLinkResponse.json();
+      const classRoomResult = await classRoomLinkResponse.json();
       if (classRoomResult.status !== "OK") {
         alert("Lỗi liên kết với class room: " + classRoomResult.message);
         return;
       }
 
-      
-      alert("Khóa học đã được liên kết thành công với Năm học và Môn học!");
-      closeModal(); 
+      alert("Phân công thành công!");
+      closeModal();
     } catch (error) {
-      console.error("Failed to link Course, Semester, and Subject:", error);
-      alert("Đã xảy ra lỗi khi liên kết Khóa học với Năm học và Môn học.");
+      console.error("Failed đã xãy ra lỗi", error);
+      alert("Đã xảy ra lỗi Phân công thất bại.");
     }
   };
 
@@ -203,7 +171,10 @@ export default function ModalTKB({ closeModal }) {
             <form className="p-4 md:p-5" onSubmit={handleSubmit}>
               <div className="grid gap-4 mb-4 grid-cols-2">
                 <div className="col-span-2">
-                  <label htmlFor="courseId" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  <label
+                    htmlFor="courseId"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
                     Lớp học phần
                   </label>
                   <select
@@ -224,7 +195,10 @@ export default function ModalTKB({ closeModal }) {
                 </div>
 
                 <div className="col-span-2">
-                  <label htmlFor="classTimeId" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  <label
+                    htmlFor="classTimeId"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
                     Ca học
                   </label>
                   <select
@@ -245,7 +219,10 @@ export default function ModalTKB({ closeModal }) {
                 </div>
 
                 <div className="col-span-2">
-                  <label htmlFor="scheduleId" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  <label
+                    htmlFor="scheduleId"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
                     Thứ trong tuần
                   </label>
                   <select
@@ -266,7 +243,10 @@ export default function ModalTKB({ closeModal }) {
                 </div>
 
                 <div className="col-span-2">
-                  <label htmlFor="room" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  <label
+                    htmlFor="classRoomId"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
                     Phòng học
                   </label>
                   <select
@@ -285,6 +265,33 @@ export default function ModalTKB({ closeModal }) {
                     ))}
                   </select>
                 </div>
+
+
+                <div className="col-span-2">
+                  <label
+                    htmlFor="teacherId"
+                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                  >
+                    Giảng viên
+                  </label>
+                  <select
+                    name="teacherId"
+                    id="teacherId"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+                    
+                    value={formData.teacherId}
+                    onChange={handleChange}
+                  >
+                    <option value="">-- Phân công giảng viên --</option>
+                    {teachers.map((teacher) => (
+                      <option key={teacher._id} value={teacher._id}>
+                        {teacher.ten}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+            
               </div>
 
               <button

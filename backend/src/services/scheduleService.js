@@ -58,7 +58,11 @@ const detailSchedule = async (id) => {
       .populate({
         path: 'classes.giang_vien_phu_trach',
         model: 'Teacher'
-      });
+      })
+      .populate({
+        path:'classes.rooms',
+        model:'ClassRoom'
+      })
 
     if (!schedule) {
       return {
@@ -73,7 +77,7 @@ const detailSchedule = async (id) => {
       data: schedule,
     };
   } catch (error) {
-    console.error("Error fetching schedule:", error); // Log the error for debugging
+    console.error("Error fetching schedule:", error); 
     return {
       status: "ERR",
       message: error.message,

@@ -10,7 +10,7 @@ const scheduleSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "CaHoc",
       },
-      room: {
+      rooms: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "ClassRoom",
       },
