@@ -30,7 +30,11 @@ export default function ClientLayout({ children }) {
 
         <main className="flex-grow w-full">
           {/* Main content */}
-          <div className={!isExcludedPage ? "mt-16 flex-grow" : "flex-grow"}>
+          <div
+            className={
+              !isExcludedPage ? "flex-grow h-full" : "flex-grow h-full"
+            }
+          >
             {children}
           </div>
         </main>

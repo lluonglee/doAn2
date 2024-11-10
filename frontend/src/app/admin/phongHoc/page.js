@@ -88,7 +88,7 @@ export default function PhongHoc() {
           </button>
           <input
             type="text"
-            placeholder="Tìm kiếm giảng viên..."
+            placeholder="Tìm kiếm phòng học..."
             value={searchQuery}
             onChange={handleSearch}
             className="border rounded-lg px-3 py-1 mb-3 ml-3"
@@ -100,13 +100,20 @@ export default function PhongHoc() {
         <table className="w-full text-sm text-gray-500 dark:text-gray-400 align-middle text-center">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
-              <th scope="col" className="px-6 py-3">Phong hoc</th>
-              <th scope="col" className="px-6 py-3">Actions</th>
+              <th scope="col" className="px-6 py-3">
+                Phong hoc
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
             {classRooms.map((classRoom) => (
-              <tr key={classRoom._id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <tr
+                key={classRoom._id}
+                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+              >
                 <td className="px-6 py-4">{classRoom.room}</td>
                 <td className="px-6 py-4 flex gap-5 justify-center">
                   <a
@@ -138,9 +145,13 @@ export default function PhongHoc() {
         >
           Previous
         </button>
-        <span className="text-gray-600">Page {currentPage} of {totalPages}</span>
+        <span className="text-gray-600">
+          Page {currentPage} of {totalPages}
+        </span>
         <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
           className="bg-gray-500 text-white px-4 py-2 rounded-lg ml-2 disabled:opacity-50"
           disabled={currentPage === totalPages}
         >
