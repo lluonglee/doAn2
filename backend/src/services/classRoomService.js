@@ -27,13 +27,20 @@ const createClassRoom = async (newClassRoom) => {
     };
   }
 };
-const getAllClassRoom = async () => {
+const getAllClassRoom = async (page, limit, search) => {
   try {
-    const getAll = await ClassRoom.find();
+    const skip = (page - 1) * limit;
+    const searchFilter = search ? { room: new RegExp(search, "i") } : {}; // Case-insensitive search for 'ten'
+    const [data, totalCount] = await Promise.all([
+      ClassRoom.find(searchFilter).skip(skip).limit(limit), // Fetch semesters with pagination
+      ClassRoom.countDocuments(searchFilter), // Count total semesters
+    ]);
+
+    const totalPages = Math.ceil(totalCount / limit);
     return {
-      status: "OK",
-      message: "get all class room Successful",
-      data: getAll,
+      data,
+      totalPages,
+      currentPage: page,
     };
   } catch (err) {
     return {
