@@ -190,7 +190,7 @@ const importExcelData = async (filePath) => {
           tin_chi_ly_thuyet: tinChiLyThuyet,
           tin_chi_thuc_hanh: tinChiThucHanh,
         });
-       // await existSubject.save(); // Uncomment this to save subject
+        await existSubject.save(); // Uncomment this to save subject
       }
 
       // Parse course-related fields with default values if missing
@@ -225,12 +225,12 @@ const importExcelData = async (filePath) => {
           loai_mon_hoc: loaiMonHoc, // Set the valid 'loai_mon_hoc'
           so_tiet_tong: Number(soTietTong) || 0,
         });
-        //await existCourse.save(); // Save the course
+        await existCourse.save(); // Save the course
       } else {
         // If course exists, ensure the correct subject ID is still linked
         if (!existCourse.subject.equals(existSubject._id)) {
           existCourse.subject = existSubject._id; // Update the subject ID if necessary
-          //await existCourse.save(); // Save the updated course
+          await existCourse.save(); // Save the updated course
         }
       }
 
@@ -247,7 +247,7 @@ const importExcelData = async (filePath) => {
           semester.cac_lop_hoc_phan.push(existCourse._id);
         }
       }
-      //await semester.save(); // Save the semester
+      await semester.save(); // Save the semester
     }
 
     return {
@@ -262,7 +262,6 @@ const importExcelData = async (filePath) => {
     };
   }
 };
-
 
 module.exports = {
   importExcelData,
