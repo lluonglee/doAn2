@@ -30,7 +30,7 @@ const courseSchema = new mongoose.Schema({
   },
   loai_mon_hoc: {
     type: String,
-    enum: ["Lý thuyết", "Thực hành"],
+    enum: ["LT", "TH","NG"],
     required: true,
   },
   hoc_ky: {

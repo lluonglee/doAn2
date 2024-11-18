@@ -78,6 +78,61 @@ const detailSemester = async (id) => {
   }
 };
 
+// const detailSemester = async (id, page = 1, limit = 10) => {
+//   try {
+//     // Tính toán số lượng bản ghi bỏ qua (skip) và lọc theo page, limit
+//     const skip = (page - 1) * limit;
+    
+//     // Tìm học kỳ và thực hiện populate các khóa học liên quan
+//     const semester = await Semester.findById(id)
+//       .populate({
+//         path: "cac_lop_hoc_phan",
+//         model: "Course",
+//         options: { skip, limit }, // Áp dụng phân trang cho các khóa học
+//         populate: [
+//           { path: "subject", model: "Subject" },
+//           { path: "department", model: "Department" },
+//           // Thêm các populate khác nếu cần
+//         ]
+//       });
+
+//     // Nếu không tìm thấy học kỳ
+//     if (!semester) {
+//       return {
+//         status: "ERR",
+//         message: "Semester not found",
+//       };
+//     }
+
+//     // Tính tổng số khóa học trong học kỳ để tính tổng số trang
+//     const totalCourses = await Semester.aggregate([
+//       { $match: { _id: id } },
+//       { $unwind: "$cac_lop_hoc_phan" },  // Tách từng khóa học
+//       { $count: "totalCourses" }  // Đếm tổng số khóa học
+//     ]);
+
+//     const totalCount = totalCourses.length > 0 ? totalCourses[0].totalCourses : 0;
+//     const totalPages = Math.ceil(totalCount / limit);
+
+//     // Trả về thông tin học kỳ và các khóa học đã phân trang
+//     return {
+//       status: "OK",
+//       message: "Successfully",
+//       data: {
+//         semester,
+//         totalPages,
+//         currentPage: page,
+//       },
+//     };
+//   } catch (error) {
+//     return {
+//       status: "ERR",
+//       message: error.message,
+//     };
+//   }
+// };
+
+
 const updateSemester = async (id, data) => {
   try {
     const existingSemester = await Semester.findById(id);

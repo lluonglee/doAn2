@@ -47,9 +47,9 @@ export default function GetDetail() {
                   <th className="px-4 py-2">Môn học</th>
                   <th className="px-4 py-2">Mã môn</th>
                   <th className="px-4 py-2">Số tín chỉ</th>
-                  <th className="px-4 py-2">Khoa</th>
+                  {/* <th className="px-4 py-2">Khoa</th>
                   <th className="px-4 py-2">Mã khoa</th>
-                  <th className="px-4 py-2">Thời khóa biểu</th>
+                  <th className="px-4 py-2">Thời khóa biểu</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -71,21 +71,21 @@ export default function GetDetail() {
                     </td>
                     
                     {/* Department Details */}
-                    <td className="px-4 py-2">
+                    {/* <td className="px-4 py-2">
                       {course.department ? course.department.ten_khoa : "N/A"}
                     </td>
                     <td className="px-4 py-2">
                       {course.department ? course.department.ma_khoa : "N/A"}
-                    </td>
+                    </td> */}
 
                     {/* Timetable */}
-                    <td className="px-4 py-2">
+                    {/* <td className="px-4 py-2">
                       {course.tkb.map((tkb) => (
                         <div key={tkb._id}>
                           {tkb.thu} - Tiết: {tkb.tiet}, Giờ: {tkb.gio}
                         </div>
                       ))}
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -100,3 +100,4 @@ export default function GetDetail() {
     </div>
   );
 }
+

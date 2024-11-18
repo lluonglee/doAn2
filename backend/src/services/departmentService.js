@@ -32,10 +32,10 @@ const createDepartment = async (newDepartment) => {
 };
 const getAllDepartment = async (page, limit, search) => {
   const skip = (page - 1) * limit;
-  const searchFilter = search ? { ten_khoa: new RegExp(search, "i") } : {}; // Case-insensitive search for 'ten'
+  const searchFilter = search ? { ten_khoa: new RegExp(search, "i") } : {}; 
   const [data, totalCount] = await Promise.all([
-    Department.find(searchFilter).skip(skip).limit(limit), // Fetch semesters with pagination
-    Department.countDocuments(searchFilter), // Count total semesters
+    Department.find(searchFilter).skip(skip).limit(limit), 
+    Department.countDocuments(searchFilter), 
   ]);
 
   const totalPages = Math.ceil(totalCount / limit);

@@ -10,6 +10,7 @@ export default function MonHoc() {
   const [semesters, setSemester] = useState([]);
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [isSecondModalOpen, setIsSecondModalOpen] = useState(false);
+  const [excelFile, setExcelFile] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
@@ -76,6 +77,32 @@ export default function MonHoc() {
     setSearchQuery(e.target.value);
     setCurrentPage(1); // Reset to the first page on new search
   };
+  const handleExcelUpload = async () => {
+    if (!excelFile) {
+      alert("Vui lòng chọn một file Excel");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", excelFile);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/excel/import", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.status === "OK") {
+        alert("File Excel đã được import thành công!");
+        fetchTeachers(currentPage, searchQuery);
+      } else {
+        alert("Import file thất bại: " + data.message);
+      }
+    } catch (error) {
+      console.error("Error importing Excel file:", error);
+    }
+  };
   useEffect(() => {
     fetchSemester(currentPage, searchQuery);
   }, [isOpen, isSecondModalOpen, currentPage, searchQuery]);
@@ -98,6 +125,19 @@ export default function MonHoc() {
             onClick={openSecondModal}
           >
             Thêm vào Lớp học phần
+          </button>
+          <input
+            type="file"
+            accept=".xlsx, .xls"
+            onChange={(e) => setExcelFile(e.target.files[0])}
+            className="mt-2 mb-2 px-3"
+          />
+          <button
+            type="button"
+            className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+            onClick={handleExcelUpload}
+          >
+            Import Excel
           </button>
           {/** tìm kiếm */}
           <input
