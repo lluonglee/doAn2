@@ -50,7 +50,19 @@ const getAllTeacher = async (page, limit, search) => {
     // const getAll = await Teacher.find().populate("department");
     // console.log(searchFilter);
     const [data, totalCount] = await Promise.all([
-      Teacher.find(searchFilter).populate("department").skip(skip).limit(limit), // Fetch semesters with pagination
+      Teacher.find(searchFilter).populate("department").populate({
+        path: "schedules", // Populate schedules array
+        populate: [
+          {
+            path: "classes.ma_lop_hoc_phan", // Populate course in class
+            model: "Course", // Model for Course
+            populate: {
+              path: "subject", // Populate subject in course
+              model: "Subject", // Model for Subject
+            },
+          },
+        ],
+      }).skip(skip).limit(limit), // Fetch semesters with pagination
       Teacher.countDocuments(searchFilter), // Count total semesters
     ]);
     const totalPages = Math.ceil(totalCount / limit);
@@ -70,7 +82,19 @@ const getAllTeacher = async (page, limit, search) => {
 //detail teacher
 const getDetailTeacher = async (id) => {
   try {
-    const teacher = await Teacher.findById(id);
+    const teacher = await Teacher.findById(id).populate({
+      path: "schedules", // populate schedule array
+      populate: [
+        {
+          path: "classes.ma_lop_hoc_phan", // populate course in class
+          model: "Course", // model for Course
+          populate: {
+            path: "subject", // populate subject in course
+            model: "Subject", // model for Subject
+          },
+        },
+      ],
+    });
     if (!teacher) {
       return {
         status: "ERR",
