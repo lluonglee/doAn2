@@ -1,7 +1,7 @@
 const Course = require("../models/courseModel");
 const Teacher = require("../models/teacherModels");
 const Department = require("../models/departmentModel");
-
+const Schedule = require("../models/schedule")
 const createCourse = async (newCourse) => {
   const {
     subject,
@@ -140,38 +140,67 @@ const deleteCourse = async (id) => {
   }
 };
 //assign Teacher
-const assignTeacher = async (teacherId, courseId) => {
-  try {
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return {
-        status: "ERR",
-        message: "can not find course",
-      };
-    }
+// const assignTeacher = async (teacherId, courseId) => {
+//   try {
+//     const course = await Course.findById(courseId);
+//     if (!course) {
+//       return {
+//         status: "ERR",
+//         message: "can not find course",
+//       };
+//     }
 
-    const teacher = await Teacher.findById(teacherId);
-    if (!teacher) {
-      return {
-        status: "ERR",
-        message: "can not find teacher",
-      };
-    }
-    course.giang_vien_phu_trach = teacher._id;
-    await course.save();
-    teacher.cac_lop_dang_day.push(course._id);
-    await teacher.save();
-    return {
-      status: "OK",
-      message: "assign Teacher successfully",
-      data: teacher,
-    };
-  } catch (error) {
-    return {
-      status: "ERR",
-      message: error.message,
-    };
+//     const teacher = await Teacher.findById(teacherId);
+//     if (!teacher) {
+//       return {
+//         status: "ERR",
+//         message: "can not find teacher",
+//       };
+//     }
+//     course.giang_vien_phu_trach = teacher._id;
+//     await course.save();
+//     teacher.cac_lop_dang_day.push(course._id);
+//     await teacher.save();
+//     return {
+//       status: "OK",
+//       message: "assign Teacher successfully",
+//       data: teacher,
+//     };
+//   } catch (error) {
+//     return {
+//       status: "ERR",
+//       message: error.message,
+//     };
+//   }
+// };
+const assignTeacher = async (scheduleId, classId, teacherId) => {
+  // Kiểm tra xem lịch học có tồn tại không
+  // const schedule = await Schedule.findById(scheduleId).populate('classes.ma_lop_hoc_phan').populate('classes.classTime').populate('classes.rooms').populate('classes.giang_vien_phu_trach');
+  const schedule = await Schedule.findById(scheduleId);
+  console.log(schedule)
+  if (!schedule) {
+    throw new Error('Schedule not found');
   }
+
+  // Kiểm tra xem giảng viên có tồn tại không
+  const teacher = await Teacher.findById(teacherId);
+  if (!teacher) {
+    throw new Error('Teacher not found');
+  }
+
+  // Tìm lớp học trong lịch và phân công giảng viên
+  const classToAssign = schedule.classes.find((classItem) => classItem._id.toString() === classId);
+  if (!classToAssign) {
+    throw new Error('Class not found in schedule');
+  }
+
+  // Cập nhật giảng viên phụ trách cho lớp học
+  classToAssign.giang_vien_phu_trach = teacher._id;
+
+  // Lưu lịch học sau khi phân công giảng viên
+  await schedule.save();
+
+  return { status: 'OK', message: 'Teacher assigned successfully' };
 };
 
 const assignDepartment = async (departmentId, courseId) => {

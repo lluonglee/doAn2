@@ -123,17 +123,31 @@ const courseController = {
     }
   },
   //assignTeacher
+  // assignTeacher: async (req, res) => {
+  //   const { teacherId, courseId } = req.body;
+  //   try {
+  //     const result = await CourseService.assignTeacher(teacherId, courseId);
+  //     res.status(200).json(result);
+  //   } catch (error) {
+  //     return res.status(404).json({
+  //       error: error.message,
+  //     });
+  //   }
+  // },
+
   assignTeacher: async (req, res) => {
-    const { teacherId, courseId } = req.body;
+    const { scheduleId, classId, teacherId } = req.body;
+  
     try {
-      const result = await CourseService.assignTeacher(teacherId, courseId);
+      // Gọi service phân công giảng viên
+      const result = await CourseService.assignTeacher(scheduleId, classId, teacherId);
       res.status(200).json(result);
     } catch (error) {
-      return res.status(404).json({
-        error: error.message,
-      });
+      console.error("Error assigning teacher:", error.message);
+      res.status(500).json({ status: "ERROR", message: error.message });
     }
   },
+
   assignDepartment: async (req, res) => {
     const { departmentId, courseId } = req.body;
     try {

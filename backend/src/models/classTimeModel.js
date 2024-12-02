@@ -7,7 +7,6 @@ const classTimeSchema = new mongoose.Schema({
   },
   buoi: {
     type: String,
-    required: true,
     enum: ['Sáng', 'Chiều', 'Tối'], 
   },
   thoiGian: {
