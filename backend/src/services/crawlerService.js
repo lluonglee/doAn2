@@ -435,6 +435,11 @@ async function crawlTimetable(khoaName, hocKyName) {
     const hocKyMap = {
       "Học kỳ 1, 2024-2025": "42",
       "Học kỳ 2, 2024-2025": "43",
+      "Học kỳ hè, 2023-2024": "41",
+      "Học kỳ 2, 2023-2024": "40",
+      "Học kỳ phụ, 2023-2024": "39",
+      "Học kỳ 1, 2023-2024": "37",
+      "Học kỳ hè, 2022-2023": "36",
     };
 
     const khoaValue = khoaMap[khoaName];
