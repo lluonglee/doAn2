@@ -119,14 +119,21 @@
 //     console.log("Selected Hoc Ky:", hocKyValue);
 
 //     // ===================================================
-//     // Clear default options in "Tuần học" multi-select
+//     // Select "Tuần học" (Multiple Selection)
+//     // delete default option
 //     await page.evaluate(() => {
-//       const removeButtons = document.querySelectorAll(".select2-selection__choice__remove");
-//       removeButtons.forEach((button) => button.click()); // Remove all default selections
+//       // Tìm tất cả các nút "×" trong multi-select
+//       const removeButtons = document.querySelectorAll(
+//         ".select2-selection__choice__remove"
+//       );
+//       if (removeButtons.length > 0) {
+//         removeButtons[0].click(); // Click vào phần tử
+//         removeButtons[1].click();
+//       }
 //     });
+//     await page.screenshot({ path: "error-screenshot.png" });
 
-//     // Open the multi-select dropdown
-//     await page.click("span.select2-selection");
+//     await page.click("span.select2-selection"); // Open the multi-select dropdown
 
 //     // Click the search button
 //     await page.click("button#btnSearch");
@@ -136,70 +143,22 @@
 //     const data = await page.evaluate(() => {
 //       const rows = document.querySelectorAll("div#tab_12 table tr");
 //       const result = [];
-
 //       rows.forEach((row, index) => {
-//         if (index > 0) { // Skip the header row
+//         if (index > 0) {
+//           // Skip the header row
 //           const cols = row.querySelectorAll("td");
 //           const rowData = Array.from(cols).map((col) => col.innerText.trim());
-//           result.push(rowData);
+//           result.push({
+//             // Structure the data in a more accessible way
+//             monHoc: rowData[0], // Adjust according to your table structure
+//             Lop: rowData[1], // Adjust according to your table structure
+//           });
 //         }
 //       });
 //       return result;
 //     });
 
-//     // Transform and parse the data
-//     const structuredData = data.map((entry) => {
-//       const [category, details] = entry;
-
-//       // Extract relevant fields using regular expressions
-//       const courseCodeMatch = details.match(/(\d+_[^\s]+)/);
-//       const subjectNameMatch = details.match(/(\w+\s-\s[^\(]+)/);
-//       const instructorMatch = details.match(/GV:\s(.*?)Phòng:/);
-//       const scheduleMatch = details.match(/(Tiết\s\d\s-\s\d,\s[^\)]+)/);
-//       const weeksMatch = details.match(/Tuần học:\s*([\d\s\-\,]+)$/); // Updated regex for weeks
-
-//       // Extract credit values (e.g., "2 (0.2)" or "3 (1.5)")
-//       const creditMatch = details.match(/(\d+)\s*\(\s*(\d+(\.\d+)?)\s*\)/);
-//       const credit = creditMatch ? parseFloat(creditMatch[2]) : 0; // Extract fractional credit value
-
-//       // Convert weeks string to an array of numbers (Trim extra spaces and split correctly)
-//       const weeksArray = weeksMatch
-//         ? weeksMatch[1]
-//             .split('-')
-//             .map((week) => week.trim())
-//             .filter((week) => week) // Remove empty strings
-//             .map((week) => parseInt(week))
-//         : [];
-
-//       // Only return valid data
-//       if (
-//         courseCodeMatch &&
-//         subjectNameMatch &&
-//         instructorMatch &&
-//         scheduleMatch &&
-//         Array.isArray(weeksArray) && weeksArray.length > 0 &&
-//         credit >= 0
-//       ) {
-//         return {
-//           courseCode: courseCodeMatch[1],
-//           subjectName: subjectNameMatch[0].trim(),
-//           instructor: instructorMatch[1].trim(),
-//           schedule: scheduleMatch[1].trim(),
-//           weeks: weeksArray, // Correctly processed weeks
-//           studentGroup: details.match(/\((\d+\s+sv)\)/)?.[1] || 'N/A',
-//           credit,  // Credit information
-//           category,
-//         };
-//       }
-//       return null; // Return null if data is invalid
-//     });
-
-//     // Filter out null values and return the valid data
-//     const validData = structuredData.filter(entry => entry !== null);
-
-//     console.log("Valid Timetable Data:", validData);
-//     return validData; // Return only valid data
-
+//     return data; // Return the structured data
 //   } catch (err) {
 //     console.error("Error crawling timetable:", err);
 
@@ -214,6 +173,7 @@
 // module.exports = {
 //   crawlTimetable,
 // };
+
 
 // const getBrowserInstance = require("../config/puppeteer");
 // const Course = require("../models/courseModel"); // Import Course model
@@ -410,6 +370,8 @@
 // module.exports = {
 //   crawlTimetable,
 // };
+
+
 
 const getBrowserInstance = require("../config/puppeteer");
 const Course = require("../models/courseModel");
