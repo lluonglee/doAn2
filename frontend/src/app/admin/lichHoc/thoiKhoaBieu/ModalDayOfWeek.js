@@ -116,7 +116,7 @@ export default function ModalNamHoc({ closeModal, itemDayOfWeek }) {
                     <option value="Thứ 5">Thứ 5</option>
                     <option value="Thứ 6">Thứ 6</option>
                     <option value="Thứ 7">Thứ 7</option>
-                    <option value="Chủ Nhật">Chủ Nhật</option>
+                    <option value="Chủ Nhật">Chủ nhật</option>
                   </select>
                 </div>
                 <div className="flex items-center justify-end mt-4">

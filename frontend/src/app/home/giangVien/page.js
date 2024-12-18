@@ -1,10 +1,11 @@
 import React from "react";
+import { Search } from "lucide-react";
 
 export default function page() {
   return (
-    <div className=" h-full flex justify-center ">
-      <h2>Thời khóa biểu giảng viên</h2>
+    <div className=" h-full flex  justify-center ">
       <div className="row">
+        <h1>Thời khóa biểu giảng viên</h1>
         <div className="form-group col-md-6">
           <div className="input-group">
             <input
@@ -12,14 +13,13 @@ export default function page() {
               name="keyword"
               type="text"
               className="form-control ui-autocomplete-input"
-              placeholder="Mã SV / Họ tên. Ví dụ: 14001001, nguyenvan, Nguyễn Văn, ..."
+              placeholder=" Họ tên"
               autocomplete="off"
             />
-            <div className="input-group-btn">
-              <button className="btn btn-success" id="btnViewData">
-                <i className="fa fa-search"></i> Tìm kiếm
-              </button>
-            </div>
+            <button className="btn btn-success ml-2" id="btnViewData">
+              <Search className="inline-block" />
+              Tìm kiếm
+            </button>
           </div>
         </div>
         <div className="form-group col-md-4">
@@ -29,6 +29,8 @@ export default function page() {
         </div>
         <input type="hidden" id="masv" name="masv" value="" />
       </div>
+
+      <div className="pageDetail"></div>
     </div>
   );
 }
