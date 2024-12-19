@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const Teacher = require("../models/teacherModels");
+const { populate } = require("../models/semesterModel");
 //create teacher
 const createTeacher = async (newTeacher) => {
   const {
@@ -42,15 +43,13 @@ const createTeacher = async (newTeacher) => {
   }
 };
 
-//get all teacher
-const getAllTeacher = async (page, limit, search) => {
+// Function to get a lecturer by email
+const getTeacherByEmail = async (email) => {
   try {
-    const skip = (page - 1) * limit;
-    const searchFilter = search ? { ten: new RegExp(search, "i") } : {}; // Case-insensitive search for 'ten'
-    // const getAll = await Teacher.find().populate("department");
-    // console.log(searchFilter);
-    const [data, totalCount] = await Promise.all([
-      Teacher.find(searchFilter).populate("department").populate({
+    //console.log(email);
+    const lecturer = await Teacher.findOne({ email })
+      .populate("department")
+      .populate({
         path: "schedules", // Populate schedules array
         populate: [
           {
@@ -61,8 +60,56 @@ const getAllTeacher = async (page, limit, search) => {
               model: "Subject", // Model for Subject
             },
           },
+          {
+            path: "classes.classTime",
+            model: "CaHoc",
+          },
+          {
+            path: "classes.rooms",
+            model: "ClassRoom",
+          },
         ],
-      }).skip(skip).limit(limit), // Fetch semesters with pagination
+      });
+    console.log(lecturer);
+    return lecturer;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// Updated getAllTeacher Service Function
+const getAllTeacher = async (page, limit, search) => {
+  try {
+    const skip = (page - 1) * limit;
+    const searchFilter = search ? { ten: new RegExp(search, "i") } : {}; // Case-insensitive search for 'ten'
+    // const getAll = await Teacher.find().populate("department");
+    // console.log(searchFilter);
+    const [data, totalCount] = await Promise.all([
+      Teacher.find(searchFilter)
+        .populate("department")
+        .populate({
+          path: "schedules", // Populate schedules array
+          populate: [
+            {
+              path: "classes.ma_lop_hoc_phan", // Populate course in class
+              model: "Course", // Model for Course
+              populate: {
+                path: "subject", // Populate subject in course
+                model: "Subject", // Model for Subject
+              },
+            },
+            {
+              path: "classes.classTime",
+              model: "CaHoc",
+            },
+            {
+              path: "classes.rooms",
+              model: "ClassRoom",
+            },
+          ],
+        })
+        .skip(skip)
+        .limit(limit), // Fetch semesters with pagination
       Teacher.countDocuments(searchFilter), // Count total semesters
     ]);
     const totalPages = Math.ceil(totalCount / limit);
@@ -79,6 +126,7 @@ const getAllTeacher = async (page, limit, search) => {
     };
   }
 };
+
 //detail teacher
 const getDetailTeacher = async (id) => {
   try {
@@ -170,4 +218,5 @@ module.exports = {
   getDetailTeacher,
   updateTeacher,
   deleteTeacher,
+  getTeacherByEmail,
 };
