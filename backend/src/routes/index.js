@@ -9,6 +9,7 @@ const classTimeRouter = require("./classTimeRouter")
 const scheduleRouter = require("./scheduleRouter")
 const classRoomRouter = require("./classRoomRouter")
 const crawlerRouter = require("./crawlerRouter")
+const exportExcelRouter = require("./exportExcelRouter")
 
 const routes = (app) =>{
     app.use('/api/teacher',teacherRouter)
@@ -22,6 +23,7 @@ const routes = (app) =>{
     app.use('/api/schedule', scheduleRouter)
     app.use('/api/room', classRoomRouter)
     app.use('/api/crawl', crawlerRouter)
+    app.use('/api/excelExport', exportExcelRouter)
 
 
 }

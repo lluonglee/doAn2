@@ -174,34 +174,44 @@ const deleteCourse = async (id) => {
 //   }
 // };
 const assignTeacher = async (scheduleId, classId, teacherId) => {
-  // Kiểm tra xem lịch học có tồn tại không
-  // const schedule = await Schedule.findById(scheduleId).populate('classes.ma_lop_hoc_phan').populate('classes.classTime').populate('classes.rooms').populate('classes.giang_vien_phu_trach');
+  // Tìm schedule theo ID
   const schedule = await Schedule.findById(scheduleId);
-  console.log(schedule)
   if (!schedule) {
     throw new Error('Schedule not found');
   }
 
-  // Kiểm tra xem giảng viên có tồn tại không
+  // Tìm teacher theo ID
   const teacher = await Teacher.findById(teacherId);
   if (!teacher) {
     throw new Error('Teacher not found');
   }
 
-  // Tìm lớp học trong lịch và phân công giảng viên
+  // Tìm class trong schedule
   const classToAssign = schedule.classes.find((classItem) => classItem._id.toString() === classId);
   if (!classToAssign) {
     throw new Error('Class not found in schedule');
   }
 
-  // Cập nhật giảng viên phụ trách cho lớp học
+  // Kiểm tra xem lớp học đã có giảng viên chưa
+  if (classToAssign.giang_vien_phu_trach && classToAssign.giang_vien_phu_trach.toString() === teacherId) {
+    return { status: 'OK', message: 'Teacher is already assigned to this class' };
+  }
+
+  // Cập nhật giảng viên phụ trách
   classToAssign.giang_vien_phu_trach = teacher._id;
 
-  // Lưu lịch học sau khi phân công giảng viên
+  // Lưu lại schedule
   await schedule.save();
 
-  return { status: 'OK', message: 'Teacher assigned successfully' };
+  // Kiểm tra xem schedule đã tồn tại trong danh sách schedules của teacher chưa
+  if (!teacher.schedules.includes(scheduleId)) {
+    teacher.schedules.push(scheduleId);
+    await teacher.save();
+  }
+
+  return { status: 'OK', message: 'Teacher assigned successfully and schedule updated' };
 };
+
 
 const assignDepartment = async (departmentId, courseId) => {
   try {
