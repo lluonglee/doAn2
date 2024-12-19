@@ -1,165 +1,3 @@
-// "use client";
-// import React, { useState, useEffect } from "react";
-// import { Search } from "lucide-react";
-
-// export default function LecturerSchedule() {
-//   const [searchQuery, setSearchQuery] = useState("");
-//   const [suggestions, setSuggestions] = useState([]);
-//   const [selectedLecturer, setSelectedLecturer] = useState(null);
-//   const [lecturerData, setLecturerData] = useState(null);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState(null);
-//   const [showSuggestions, setShowSuggestions] = useState(false);
-
-//   // Fetch suggestions as the user types
-//   useEffect(() => {
-//     if (searchQuery.length > 0) {
-//       fetchSuggestions(searchQuery);
-//     } else {
-//       setSuggestions([]);
-//     }
-//   }, [searchQuery]);
-
-//   const fetchSuggestions = async (query) => {
-//     try {
-//       const response = await fetch(
-//         `http://localhost:5000/api/teacher/get-all?name=${query}`
-//       );
-//       if (!response.ok) {
-//         throw new Error("Failed to fetch suggestions");
-//       }
-//       const data = await response.json();
-//       setSuggestions(data.data); // Assuming the API returns an array of lecturers in data.data
-//     } catch (err) {
-//       setError(err.message);
-//     }
-//   };
-
-//   const handleSearchChange = (e) => {
-//     setSearchQuery(e.target.value);
-//     setShowSuggestions(true); // Show suggestions when user types
-//   };
-
-//   const handleSuggestionClick = (lecturer) => {
-//     setSelectedLecturer(lecturer);
-//     setSearchQuery(`${lecturer.ten} - ${lecturer.email}`);
-//     setShowSuggestions(false); // Hide suggestions after selection
-//     fetchLecturerData(lecturer.email); // Fetch the schedule based on the selected lecturer's email
-//   };
-
-//   const fetchLecturerData = async (email) => {
-//     setLoading(true);
-//     setError(null);
-//     try {
-//       const res = await fetch(
-//         `http://localhost:5000/api/teacher/get-all?email=${email}`
-//       );
-//       if (!res.ok) {
-//         throw new Error("Failed to fetch lecturer data");
-//       }
-//       const data = await res.json();
-//       setLecturerData(data.data);
-//     } catch (err) {
-//       setError(err.message);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="h-full flex flex-col items-center">
-//       {/* Header */}
-//       <div className="row">
-//         <h1 className="text-4xl">Thời khóa biểu giảng viên</h1>
-//         <div className="form-group col-md-6">
-//           <div className="input-group">
-//             <input
-//               id="keyword"
-//               name="keyword"
-//               type="text"
-//               className="form-control ui-autocomplete-input border border-[#c9d1d9]"
-//               placeholder=" Họ tên"
-//               autoComplete="off"
-//               value={searchQuery}
-//               onChange={handleSearchChange}
-//             />
-//             <button
-//               className="btn btn-success m-4"
-//               id="btnViewData"
-//               onClick={() => fetchLecturerData(selectedLecturer?.email)}
-//               disabled={!selectedLecturer}
-//             >
-//               <Search className="inline-block" />
-//               Tìm kiếm
-//             </button>
-//           </div>
-//           {/* Suggestions Dropdown */}
-//           {showSuggestions && (
-//             <ul className="suggestions-dropdown border border-gray-300 mt-2 w-full max-h-60 overflow-y-auto">
-//               {suggestions.map((lecturer) => (
-//                 <li
-//                   className="p-2 hover:bg-gray-100 cursor-pointer"
-//                   key={lecturer.email}
-//                   onClick={() => handleSuggestionClick(lecturer)}
-//                 >
-//                   {lecturer.ten} - {lecturer.email}
-//                 </li>
-//               ))}
-//             </ul>
-//           )}
-//         </div>
-//       </div>
-
-//       {/* Page Details */}
-//       {loading && <p>Loading...</p>}
-//       {error && <p className="text-red-500">{error}</p>}
-//       {lecturerData && (
-//         <div className="pageDetail">
-//           <div>
-//             <h1>
-//               {lecturerData.id} - {lecturerData.name} - {lecturerData.class} -{" "}
-//               {lecturerData.semester}
-//             </h1>
-//           </div>
-
-//           {/* Table */}
-//           <div className="table w-full border-collapse border border-gray-300">
-//             <table className="table-auto w-full text-left border border-gray-400">
-//               <thead>
-//                 <tr className="bg-gray-200">
-//                   <th className="border border-gray-400 p-2">Thứ</th>
-//                   <th className="border border-gray-400 p-2">Lớp học phần</th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 {lecturerData.schedules.map((day, index) => (
-//                   <tr key={index} className="hover:bg-gray-100">
-//                     <td className="border border-gray-400 p-2">{day.day}</td>
-//                     <td className="border border-gray-400 p-2">
-//                       {day.className}
-//                       <br />
-//                       <strong>{day.classDescription}</strong>
-//                       <br />
-//                       GV: <strong>{day.teacher}</strong>
-//                       <br />
-//                       Phòng: <strong>{day.room}</strong> (Ca {day.session},{" "}
-//                       <strong>{day.time}</strong>)
-//                       <br />
-//                       Tuần học: {day.week}
-//                       <br />
-//                       Ngày học: {day.date}
-//                     </td>
-//                   </tr>
-//                 ))}
-//               </tbody>
-//             </table>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -182,6 +20,14 @@ export default function LecturerSchedule() {
       setSuggestions([]);
     }
   }, [searchQuery]);
+
+  // Fetch lecturer data if email is stored in localStorage
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("userEmail");
+    if (storedEmail) {
+      fetchLecturerData(storedEmail);
+    }
+  }, []);
 
   const fetchSuggestions = async (query) => {
     try {
