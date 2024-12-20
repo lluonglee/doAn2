@@ -103,25 +103,44 @@ const teacherController = {
 
   getAllTeacher: async (req, res) => {
     try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 5;
-      const search = req.query.search || ""; // Get the search query from the request
-      const { data, totalPages, currentPage } =
+      const { page = 1, limit = 5, search = "", email } = req.query;
+
+      // If an email is provided, fetch the specific lecturer's data
+      if (email) {
+        const lecturer = await teacherService.getTeacherByEmail(email);
+        console.log("controller: ", lecturer);
+        if (lecturer.email === email) {
+          return res.status(200).json({
+            status: "OK",
+            data: lecturer, // Returning as an array for consistency
+          });
+        } else {
+          return res.status(404).json({
+            status: "ERR",
+            message: "Lecturer not found",
+          });
+        }
+      }
+
+      // Otherwise, fetch all lecturers with pagination and search
+      const { data, duplicates, totalPages, currentPage } =
         await teacherService.getAllTeacher(page, limit, search);
 
       res.status(200).json({
         status: "OK",
         data,
+        duplicates,
         currentPage,
         totalPages,
       });
     } catch (error) {
-      return {
+      res.status(500).json({
         status: "ERR",
         message: error.message,
-      };
+      });
     }
   },
+
   getDetailTeacher: async (req, res) => {
     try {
       const teacherDetail = req.params.id;

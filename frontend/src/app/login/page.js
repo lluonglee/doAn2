@@ -30,7 +30,9 @@ export default function Login() {
       if (res.ok && !data.isAdmin) {
         // Lưu access token vào localStorage
         localStorage.setItem("accessToken", data.accessToken);
-        router.push("/");
+        // Store user email
+        localStorage.setItem("userEmail", email);
+        router.push("/home/giangVien");
         console.log("Login successful! Token: " + data.accessToken); // accessToken
         console.log(data.isAdmin);
       } else if (res.ok && data.isAdmin) {
