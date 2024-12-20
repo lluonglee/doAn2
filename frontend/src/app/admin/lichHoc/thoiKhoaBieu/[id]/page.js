@@ -20,9 +20,7 @@ export default function GetDetailDepartment() {
   // Fetch schedule details
   const fetchSchedule = async (id) => {
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/schedule/detail-schedule/${id}`
-      );
+      const res = await fetch(`http://localhost:5000/api/schedule/detail-schedule/${id}`);
       const data = await res.json();
       if (data.status === "OK") setScheduleDetail(data.data);
       else console.error("Failed to fetch schedule details");
@@ -57,18 +55,15 @@ export default function GetDetailDepartment() {
 
     setLoading(true);
     try {
-      const res = await fetch(
-        "http://localhost:5000/api/assign/assign-teacher",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            scheduleId: scheduleDetail._id, // Pass scheduleId here
-            classId: selectedClassId, // Pass selectedClassId
-            teacherId: selectedTeacherId, // Pass selectedTeacherId
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:5000/api/assign/assign-teacher", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          scheduleId: scheduleDetail._id, // Pass scheduleId here
+          classId: selectedClassId, // Pass selectedClassId
+          teacherId: selectedTeacherId, // Pass selectedTeacherId
+        }),
+      });
 
       const result = await res.json();
       if (result.status === "OK") {
@@ -87,43 +82,8 @@ export default function GetDetailDepartment() {
     }
   };
 
-  // button cào
-  // Handle data crawling
-  const handleCrawl = async () => {
-    const selectElement = document.getElementById("hocky");
-    const selectedSemester = selectElement.selectedOptions[0].text;
-    console.log(selectedSemester);
-    if (!selectedSemester) {
-      alert("Vui lòng chọn học kỳ trước khi cào dữ liệu!");
-      return;
-    }
 
-    setLoading(true);
-    try {
-      const res = await fetch("http://localhost:5000/api/crawl/crawler", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          khoaName: "Khoa Công nghệ thông tin",
-          hocKyName: selectedSemester,
-        }),
-      });
-      const data = await res.json();
-      console.log(data);
-      if (data.success === true) {
-        alert("Cào dữ liệu thành công!");
-        //fetchSchedule(id); // Refresh the schedule to include new data
-        console.log(data.data);
-      } else {
-        alert("Cào dữ liệu thất bại: " + data.message);
-      }
-    } catch (error) {
-      console.error("Error during data crawling:", error);
-      alert("Có lỗi xảy ra khi cào dữ liệu!");
-    } finally {
-      setLoading(false);
-    }
-  };
+  
 
   return (
     <div>
@@ -134,29 +94,6 @@ export default function GetDetailDepartment() {
           <p className="py-2">
             <strong>Thứ trong tuần:</strong> {scheduleDetail.dayOfWeek}
           </p>
-
-          <div className="flex flex-row crawler">
-            <button
-              type="button"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-              onClick={handleCrawl} // Gắn hàm handleCrawl
-              disabled={loading} // Disable button khi đang tải
-            >
-              {loading ? "Đang cào dữ liệu..." : "Cào dữ liệu"}
-            </button>
-
-            <div class="form-group col-md-4">
-              <select class="form-control" id="hocky" name="hocky">
-                <option value="42">Học kỳ 1, 2024-2025</option>
-                <option value="43">Học kỳ 2, 2024-2025</option>
-                <option value="41">Học kỳ hè, 2023-2024</option>
-                <option value="40">Học kỳ 2, 2023-2024</option>
-                <option value="39">Học kỳ phụ, 2023-2024</option>
-                <option value="37">Học kỳ 1, 2023-2024</option>
-                <option value="36">Học kỳ hè, 2022-2023</option>
-              </select>
-            </div>
-          </div>
 
           {/* Table for classes */}
           <div className="relative overflow-x-auto shadow-md">
@@ -220,9 +157,7 @@ export default function GetDetailDepartment() {
               ))}
             </select>
             <button
-              className={`bg-blue-600 text-white px-4 py-2 rounded ${
-                loading ? "opacity-50" : ""
-              }`}
+              className={`bg-blue-600 text-white px-4 py-2 rounded ${loading ? "opacity-50" : ""}`}
               onClick={handleAssignTeacher}
               disabled={loading}
             >
