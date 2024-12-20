@@ -54,10 +54,14 @@ const getAllCourse = async (page, limit, search) => {
   const skip = (page - 1) * limit;
   const searchFilter = search
     ? { ma_lop_hoc_phan: new RegExp(search, "i") }
-    : {}; // Case-insensitive search for 'ten'
+    : {};
+
   const [data, totalCount] = await Promise.all([
-    Course.find(searchFilter).skip(skip).limit(limit), // Fetch semesters with pagination
-    Course.countDocuments(searchFilter), // Count total semesters
+    Course.find(searchFilter)
+      .skip(skip)
+      .limit(limit)
+      .populate("subject", "ma_mon ten_mon"), // Chỉ lấy các trường ma_mon và ten_mon
+    Course.countDocuments(searchFilter),
   ]);
 
   const totalPages = Math.ceil(totalCount / limit);
@@ -68,9 +72,13 @@ const getAllCourse = async (page, limit, search) => {
     currentPage: page,
   };
 };
+
 const detailCourse = async (id) => {
   try {
-    const course = await Course.findById(id);
+    const course = await Course.findById(id).populate(
+      "subject",
+      "ma_mon ten_mon"
+    );
 
     if (!course) {
       return {
@@ -139,108 +147,89 @@ const deleteCourse = async (id) => {
     };
   }
 };
+//assign Teacher
+// const assignTeacher = async (teacherId, courseId) => {
+//   try {
+//     const course = await Course.findById(courseId);
+//     if (!course) {
+//       return {
+//         status: "ERR",
+//         message: "can not find course",
+//       };
+//     }
 
-
-// const assignTeacher = async (scheduleId, classId, teacherId) => {
-//   // Tìm schedule theo ID
-//   const schedule = await Schedule.findById(scheduleId);
-//   if (!schedule) {
-//     throw new Error('Schedule not found');
-//   }
-
-//   // Tìm teacher theo ID
-//   const teacher = await Teacher.findById(teacherId);
-//   if (!teacher) {
-//     throw new Error('Teacher not found');
-//   }
-
-//   // Tìm class trong schedule
-//   const classToAssign = schedule.classes.find((classItem) => classItem._id.toString() === classId);
-//   if (!classToAssign) {
-//     throw new Error('Class not found in schedule');
-//   }
-
-//   // Kiểm tra xem lớp học đã có giảng viên chưa
-//   if (classToAssign.giang_vien_phu_trach && classToAssign.giang_vien_phu_trach.toString() === teacherId) {
-//     return { status: 'OK', message: 'Teacher is already assigned to this class' };
-//   }
-
-//   // Cập nhật giảng viên phụ trách
-//   classToAssign.giang_vien_phu_trach = teacher._id;
-
-//   // Lưu lại schedule
-//   await schedule.save();
-
-//   // Kiểm tra xem schedule đã tồn tại trong danh sách schedules của teacher chưa
-//   if (!teacher.schedules.includes(scheduleId)) {
-//     teacher.schedules.push(scheduleId);
+//     const teacher = await Teacher.findById(teacherId);
+//     if (!teacher) {
+//       return {
+//         status: "ERR",
+//         message: "can not find teacher",
+//       };
+//     }
+//     course.giang_vien_phu_trach = teacher._id;
+//     await course.save();
+//     teacher.cac_lop_dang_day.push(course._id);
 //     await teacher.save();
+//     return {
+//       status: "OK",
+//       message: "assign Teacher successfully",
+//       data: teacher,
+//     };
+//   } catch (error) {
+//     return {
+//       status: "ERR",
+//       message: error.message,
+//     };
 //   }
-
-//   return { status: 'OK', message: 'Teacher assigned successfully and schedule updated' };
 // };
-
-
-
-
-
 const assignTeacher = async (scheduleId, classId, teacherId) => {
-  try {
-    // Tìm schedule theo ID
-    const schedule = await Schedule.findById(scheduleId);
-    if (!schedule) {
-      throw new Error('Schedule not found');
-    }
-
-    // Tìm teacher theo ID
-    const teacher = await Teacher.findById(teacherId);
-    if (!teacher) {
-      throw new Error('Teacher not found');
-    }
-
-    // Tìm class trong schedule
-    const classToAssign = schedule.classes.find((classItem) => classItem._id.toString() === classId);
-    if (!classToAssign) {
-      throw new Error('Class not found in schedule');
-    }
-
-    // Kiểm tra xem lớp học đã có giảng viên chưa
-    if (classToAssign.giang_vien_phu_trach) {
-      // Nếu lớp học đã có giảng viên, kiểm tra xem giảng viên đó có phải là giảng viên đang phân công không
-      if (classToAssign.giang_vien_phu_trach.toString() === teacherId) {
-        return { status: 'OK', message: 'Teacher is already assigned to this class' };
-      } else {
-        return { status: 'Error', message: 'This class is already assigned to another teacher' };
-      }
-    }
-
-    // Nếu lớp chưa có giảng viên, tiến hành phân công giảng viên
-    classToAssign.giang_vien_phu_trach = teacher._id;
-
-    // Lưu lại schedule
-    await schedule.save();
-
-    // Kiểm tra xem schedule đã tồn tại trong danh sách schedules của teacher chưa
-    if (!teacher.schedules.includes(scheduleId)) {
-      teacher.schedules.push(scheduleId);
-      await teacher.save();
-    }
-
-    return { status: 'OK', message: 'Teacher assigned successfully and schedule updated' };
-
-  } catch (error) {
-    // Quản lý lỗi, trả về thông báo lỗi chi tiết
-    console.error(error);
-    return { status: 'Error', message: error.message };
+  // Tìm schedule theo ID
+  const schedule = await Schedule.findById(scheduleId);
+  if (!schedule) {
+    throw new Error("Schedule not found");
   }
+
+  // Tìm teacher theo ID
+  const teacher = await Teacher.findById(teacherId);
+  if (!teacher) {
+    throw new Error("Teacher not found");
+  }
+
+  // Tìm class trong schedule
+  const classToAssign = schedule.classes.find(
+    (classItem) => classItem._id.toString() === classId
+  );
+  if (!classToAssign) {
+    throw new Error("Class not found in schedule");
+  }
+
+  // Kiểm tra xem lớp học đã có giảng viên chưa
+  if (
+    classToAssign.giang_vien_phu_trach &&
+    classToAssign.giang_vien_phu_trach.toString() === teacherId
+  ) {
+    return {
+      status: "OK",
+      message: "Teacher is already assigned to this class",
+    };
+  }
+
+  // Cập nhật giảng viên phụ trách
+  classToAssign.giang_vien_phu_trach = teacher._id;
+
+  // Lưu lại schedule
+  await schedule.save();
+
+  // Kiểm tra xem schedule đã tồn tại trong danh sách schedules của teacher chưa
+  if (!teacher.schedules.includes(scheduleId)) {
+    teacher.schedules.push(scheduleId);
+    await teacher.save();
+  }
+
+  return {
+    status: "OK",
+    message: "Teacher assigned successfully and schedule updated",
+  };
 };
-
-
-
-
-
-
-
 
 const assignDepartment = async (departmentId, courseId) => {
   try {
