@@ -130,7 +130,7 @@ export default function Sidebar() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/billing" legacyBehavior>
+                  <Link href="/home/lopHocPhan" legacyBehavior>
                     <a className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
                       TKB lớp học phần
                     </a>

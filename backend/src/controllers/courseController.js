@@ -37,7 +37,7 @@ const courseController = {
     try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 5;
-      const search = req.query.search || ""; // Get the search query from the request
+      const search = req.query.name || ""; // Get the search query from the request
       const { data, totalPages, currentPage } =
         await CourseService.getAllCourse(page, limit, search);
 
@@ -137,10 +137,14 @@ const courseController = {
 
   assignTeacher: async (req, res) => {
     const { scheduleId, classId, teacherId } = req.body;
-  
+
     try {
       // Gọi service phân công giảng viên
-      const result = await CourseService.assignTeacher(scheduleId, classId, teacherId);
+      const result = await CourseService.assignTeacher(
+        scheduleId,
+        classId,
+        teacherId
+      );
       res.status(200).json(result);
     } catch (error) {
       console.error("Error assigning teacher:", error.message);
