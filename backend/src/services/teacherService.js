@@ -124,6 +124,129 @@ const getTeacherByEmail = async (email) => {
   }
 };
 
+//
+// const getTeacherByMa_khoa = async (ma_khoa) => {
+//   try {
+//     // Tìm giảng viên theo ma_khoa
+//     console.log(ma_khoa);
+//     const lecturers = await Teacher.find({})
+//       .populate({ path: "department", match: { ma_khoa: ma_khoa } }) // Điều kiện lọc
+//       .populate({
+//         path: "schedules",
+//         populate: [
+//           //{ path: "classes.giang_vien_phu_trach", model: "Teacher" },
+//           {
+//             path: "classes.ma_lop_hoc_phan",
+//             model: "Course",
+//             populate: {
+//               path: "subject",
+//               model: "Subject",
+//             },
+//           },
+//           {
+//             path: "classes.classTime",
+//             model: "CaHoc",
+//           },
+//           {
+//             path: "classes.rooms",
+//             model: "ClassRoom",
+//           },
+//         ],
+//       })
+//       .exec();
+
+//     // Lọc ra các giảng viên có department không phải null
+//     const filteredLecturers = lecturers.filter(
+//       (lecturer) => lecturer.department !== null
+//     );
+
+//     // Lặp qua từng giảng viên và lọc schedules
+//     filteredLecturers.forEach((lecturer) => {
+//       const filteredSchedules = lecturer.schedules.filter((schedule) =>
+//         schedule.classes.some(
+//           (classItem) =>
+//             classItem.giang_vien_phu_trach?.toString() ===
+//             lecturer._id.toString()
+//         )
+//       );
+
+//       // Thay thế schedules của giảng viên bằng danh sách đã lọc
+//       lecturer.schedules = filteredSchedules;
+//     });
+
+//     return filteredLecturers;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
+
+//
+
+const getTeacherByMa_khoa = async (ma_khoa) => {
+  try {
+    // Tìm giảng viên theo ma_khoa
+    console.log(ma_khoa);
+    const lecturers = await Teacher.find({})
+      .populate({ path: "department", match: { ma_khoa: ma_khoa } }) // Điều kiện lọc
+      .populate({
+        path: "schedules",
+        populate: [
+          {
+            path: "classes.ma_lop_hoc_phan",
+            model: "Course",
+            populate: {
+              path: "subject",
+              model: "Subject",
+            },
+          },
+          {
+            path: "classes.classTime",
+            model: "CaHoc",
+          },
+          {
+            path: "classes.rooms",
+            model: "ClassRoom",
+          },
+        ],
+      })
+      .exec();
+
+    // Lọc ra các giảng viên có department không phải null
+    const filteredLecturers = lecturers.filter(
+      (lecturer) => lecturer.department !== null
+    );
+
+    // Lặp qua từng giảng viên và lọc schedules
+    const populatedLecturers = await Promise.all(
+      filteredLecturers.map(async (lecturer) => {
+        const populatedSchedules = await Promise.all(
+          lecturer.schedules.map(async (schedule) => {
+            const populatedClasses = await Promise.all(
+              schedule.classes.map(async (classItem) => {
+                if (classItem.giang_vien_phu_trach) {
+                  const teacherDetails = await Teacher.findById(
+                    classItem.giang_vien_phu_trach
+                  ).select("ten");
+                  classItem.giang_vien_phu_trach = teacherDetails;
+                }
+                return classItem;
+              })
+            );
+            schedule.classes = populatedClasses;
+            return schedule;
+          })
+        );
+        lecturer.schedules = populatedSchedules;
+        return lecturer;
+      })
+    );
+
+    return populatedLecturers;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 // Updated getAllTeacher Service Function
 const getAllTeacher = async (page, limit, search) => {
   try {
@@ -266,4 +389,5 @@ module.exports = {
   updateTeacher,
   deleteTeacher,
   getTeacherByEmail,
+  getTeacherByMa_khoa,
 };

@@ -22,21 +22,23 @@ const departmentController = {
     try {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 5;
-      const search = req.query.search || ""; // Get the search query from the request
-      const { data, totalPages, currentPage } =
-        await DepartmentService.getAllDepartment(page, limit, search);
+      const search = req.query.search || "";
+      const ma_khoa = req.query.ma_khoa || ""; // Nhận mã khoa từ query
 
-      res.status(200).json({
+      const { data, totalPages, currentPage } =
+        await DepartmentService.getAllDepartment(page, limit, search, ma_khoa);
+
+      return res.status(200).json({
         status: "OK",
         data,
         currentPage,
         totalPages,
       });
     } catch (err) {
-      return {
+      return res.status(500).json({
         status: "ERR",
         message: err.message,
-      };
+      });
     }
   },
   getDetailDepartment: async (req, res) => {

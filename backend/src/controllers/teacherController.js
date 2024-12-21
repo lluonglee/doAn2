@@ -103,30 +103,47 @@ const teacherController = {
 
   getAllTeacher: async (req, res) => {
     try {
-      const { page = 1, limit = 5, search = "", email } = req.query;
+      const { page = 1, limit = 5, search = "", email, ma_khoa } = req.query;
 
-      // If an email is provided, fetch the specific lecturer's data
+      // Kiểm tra nếu có `email` và trả về kết quả
       if (email) {
         const lecturer = await teacherService.getTeacherByEmail(email);
         console.log("controller: ", lecturer);
-        if (lecturer.email === email) {
+        if (lecturer && lecturer.email === email) {
           return res.status(200).json({
             status: "OK",
             data: lecturer, // Returning as an array for consistency
           });
-        } else {
-          return res.status(404).json({
-            status: "ERR",
-            message: "Lecturer not found",
-          });
         }
+        return res.status(404).json({
+          status: "ERR",
+          message: "Lecturer not found",
+        });
       }
 
-      // Otherwise, fetch all lecturers with pagination and search
+      // Kiểm tra nếu có `ma_khoa` và trả về kết quả
+      if (ma_khoa) {
+        const lecturersByMa_khoa = await teacherService.getTeacherByMa_khoa(
+          ma_khoa
+        );
+        console.log("controller: ", lecturersByMa_khoa);
+        if (lecturersByMa_khoa && lecturersByMa_khoa.length > 0) {
+          return res.status(200).json({
+            status: "OK",
+            data: lecturersByMa_khoa, // Trả về danh sách giảng viên có `ma_khoa` tương ứng
+          });
+        }
+        return res.status(404).json({
+          status: "ERR",
+          message: "No lecturers found for the specified `ma_khoa`",
+        });
+      }
+
+      // Nếu không có `email` và `ma_khoa`, trả về tất cả các giảng viên với phân trang và tìm kiếm
       const { data, duplicates, totalPages, currentPage } =
         await teacherService.getAllTeacher(page, limit, search);
 
-      res.status(200).json({
+      return res.status(200).json({
         status: "OK",
         data,
         duplicates,
@@ -134,7 +151,7 @@ const teacherController = {
         totalPages,
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         status: "ERR",
         message: error.message,
       });

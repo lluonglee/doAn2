@@ -30,12 +30,21 @@ const createDepartment = async (newDepartment) => {
     };
   }
 };
-const getAllDepartment = async (page, limit, search) => {
+const getAllDepartment = async (page, limit, search, ma_khoa) => {
   const skip = (page - 1) * limit;
-  const searchFilter = search ? { ten_khoa: new RegExp(search, "i") } : {}; 
+
+  // Tạo bộ lọc tìm kiếm
+  let searchFilter = {};
+  if (search) {
+    searchFilter.ten_khoa = new RegExp(search, "i"); // Tìm kiếm theo tên khoa
+  }
+  if (ma_khoa) {
+    searchFilter.ma_khoa = ma_khoa; // Lọc theo mã khoa
+  }
+
   const [data, totalCount] = await Promise.all([
-    Department.find(searchFilter).skip(skip).limit(limit), 
-    Department.countDocuments(searchFilter), 
+    Department.find(searchFilter).skip(skip).limit(limit),
+    Department.countDocuments(searchFilter),
   ]);
 
   const totalPages = Math.ceil(totalCount / limit);
