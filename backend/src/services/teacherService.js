@@ -44,20 +44,52 @@ const createTeacher = async (newTeacher) => {
 };
 
 // Function to get a lecturer by email
+// const getTeacherByEmail = async (email) => {
+//   try {
+//     //console.log(email);
+//     const lecturer = await Teacher.findOne({ email })
+//       .populate("department")
+//       .populate({
+//         path: "schedules", // Populate schedules array
+//         populate: [
+//           {
+//             path: "classes.ma_lop_hoc_phan", // Populate course in class
+//             model: "Course", // Model for Course
+//             populate: {
+//               path: "subject", // Populate subject in course
+//               model: "Subject", // Model for Subject
+//             },
+//           },
+//           {
+//             path: "classes.classTime",
+//             model: "CaHoc",
+//           },
+//           {
+//             path: "classes.rooms",
+//             model: "ClassRoom",
+//           },
+//         ],
+//       });
+//     console.log(lecturer);
+//     return lecturer;
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
 const getTeacherByEmail = async (email) => {
   try {
-    //console.log(email);
+    // Tìm giảng viên theo email
     const lecturer = await Teacher.findOne({ email })
       .populate("department")
       .populate({
-        path: "schedules", // Populate schedules array
+        path: "schedules",
         populate: [
           {
-            path: "classes.ma_lop_hoc_phan", // Populate course in class
-            model: "Course", // Model for Course
+            path: "classes.ma_lop_hoc_phan",
+            model: "Course",
             populate: {
-              path: "subject", // Populate subject in course
-              model: "Subject", // Model for Subject
+              path: "subject",
+              model: "Subject",
             },
           },
           {
@@ -70,7 +102,22 @@ const getTeacherByEmail = async (email) => {
           },
         ],
       });
-    console.log(lecturer);
+
+    if (!lecturer) {
+      throw new Error("Lecturer not found");
+    }
+
+    // Lọc schedules để giữ lại những schedule đã được phân công
+    const filteredSchedules = lecturer.schedules.filter((schedule) =>
+      schedule.classes.some(
+        (classItem) =>
+          classItem.giang_vien_phu_trach?.toString() === lecturer._id.toString()
+      )
+    );
+
+    // Thay thế schedules của giảng viên bằng danh sách đã lọc
+    lecturer.schedules = filteredSchedules;
+
     return lecturer;
   } catch (error) {
     throw new Error(error.message);
