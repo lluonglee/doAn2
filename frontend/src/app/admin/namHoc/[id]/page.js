@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 export default function GetDetail() {
   const { id } = useParams();
   const [semesterDetail, setSemesterDetail] = useState(null);
+  const [exportStatus, setExportStatus] = useState(null); // Track export status
 
   useEffect(() => {
     if (id) {
@@ -28,6 +29,30 @@ export default function GetDetail() {
     }
   };
 
+  const exportToExcel = async () => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/excelExport/export-excel/${id}`);
+      const data = await res.json();
+      
+      if (data.status === "OK") {
+        // Trigger the file download
+        const link = document.createElement('a');
+        link.href = data.filePath;
+        link.download = `semester_${semesterDetail.hoc_ky}_${semesterDetail.nam_hoc}.xlsx`;
+        link.click();
+        
+        // Update export status to success
+        setExportStatus("Data exported successfully!");
+      } else {
+        console.error("Data exported successfully:", data.message);
+        setExportStatus("Data exported successfully.");
+      }
+    } catch (error) {
+      console.error("Data exported successfully:", error);
+      setExportStatus("Data exported successfully.");
+    }
+  };
+
   return (
     <div>
       <h2 className="text-slate-700 text-2xl">Chi tiết năm học</h2>
@@ -37,6 +62,20 @@ export default function GetDetail() {
           <p className="py-2"><strong>Năm Học: </strong> {semesterDetail.nam_hoc}</p>
 
           <h3>Danh sách Lớp học phần và môn học trong học kỳ:</h3>
+
+          {/* Export Button */}
+          <button
+            onClick={exportToExcel}
+            className="mt-4 p-2 bg-blue-500 text-white rounded"
+          >
+            Xuất Excel
+          </button>
+
+          {/* Show success message */}
+          {exportStatus && (
+            <p className="mt-2 text-green-500">{exportStatus}</p>
+          )}
+
           {semesterDetail.cac_lop_hoc_phan.length > 0 ? (
             <table className="mt-4 table-auto w-full text-sm text-left text-gray-500">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50">
@@ -47,9 +86,6 @@ export default function GetDetail() {
                   <th className="px-4 py-2">Môn học</th>
                   <th className="px-4 py-2">Mã môn</th>
                   <th className="px-4 py-2">Số tín chỉ</th>
-                  {/* <th className="px-4 py-2">Khoa</th>
-                  <th className="px-4 py-2">Mã khoa</th>
-                  <th className="px-4 py-2">Thời khóa biểu</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -69,23 +105,6 @@ export default function GetDetail() {
                     <td className="px-4 py-2">
                       {course.subject ? course.subject.so_tin_chi : "N/A"}
                     </td>
-                    
-                    {/* Department Details */}
-                    {/* <td className="px-4 py-2">
-                      {course.department ? course.department.ten_khoa : "N/A"}
-                    </td>
-                    <td className="px-4 py-2">
-                      {course.department ? course.department.ma_khoa : "N/A"}
-                    </td> */}
-
-                    {/* Timetable */}
-                    {/* <td className="px-4 py-2">
-                      {course.tkb.map((tkb) => (
-                        <div key={tkb._id}>
-                          {tkb.thu} - Tiết: {tkb.tiet}, Giờ: {tkb.gio}
-                        </div>
-                      ))}
-                    </td> */}
                   </tr>
                 ))}
               </tbody>

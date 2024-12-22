@@ -119,13 +119,19 @@ async function crawlTimetable(khoaName, hocKyName) {
     const khoaValue = khoaMap[khoaName];
     const hocKyValue = hocKyMap[hocKyName];
 
+    const semesterNumber = hocKyName.match(/\d+/); // This regex matches the first number in the string (e.g., "1")
+    const semesterNumberValue = semesterNumber ? semesterNumber[0] : null;
+
     // Check and save Semester if it doesn't exist
-    const existingSemester = await Semester.findOne({ hoc_ky: hocKyName });
+    const existingSemester = await Semester.findOne({
+      hoc_ky: semesterNumberValue,
+    });
     if (!existingSemester) {
       const newSemester = new Semester({
-        hoc_ky: hocKyName,
+        hoc_ky: semesterNumberValue, // Save only the semester number
         nam_hoc: hocKyName.split(",")[1].trim(),
       });
+      await newSemester.save();
       console.log("Semester saved:", newSemester);
     }
 
@@ -282,6 +288,28 @@ async function crawlTimetable(khoaName, hocKyName) {
           await existingCourse.save();
           console.log("Course updated with subjectId:", existingCourse);
         }
+      }
+
+      let existingSemester = await Semester.findOne({
+        hoc_ky: semesterNumberValue,
+      });
+
+      if (!existingSemester) {
+        // If the semester does not exist, create a new one
+        const newSemester = new Semester({
+          hoc_ky: semesterNumberValue,
+          nam_hoc: hocKyName.split(",")[1].trim(),
+        });
+        await newSemester.save();
+        console.log("Semester saved:", newSemester);
+        existingSemester = newSemester;
+      }
+
+      // Add the course to the semester
+      if (!existingSemester.cac_lop_hoc_phan.includes(existingCourse._id)) {
+        existingSemester.cac_lop_hoc_phan.push(existingCourse._id);
+        await existingSemester.save();
+        console.log("Course added to semester:", existingCourse.courseCode);
       }
 
       // Check if the ClassTime already exists

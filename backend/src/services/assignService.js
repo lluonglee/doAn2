@@ -31,6 +31,37 @@ const assignCourseToSchedule = async (courseId, scheduleId) => {
   }
 };
 
+const assignTeacherToCourse = async (courseId, teacherId) => {
+  try {
+    // Find the course by ID
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return { status: "ERR", message: "Cannot find course" };
+    }
+
+    // Find the teacher by ID
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) {
+      return { status: "ERR", message: "Cannot find teacher" };
+    }
+
+    // Assign the teacher to the course
+    course.giang_vien_phu_trach = teacher._id;  // Assign teacher to course
+
+    // Save the updated course
+    await course.save();
+
+    return {
+      status: "OK",
+      message: "Teacher assigned to course successfully",
+      data: course,
+    };
+  } catch (error) {
+    return { status: "ERR", message: error.message };
+  }
+};
+
+
 const assignClassTimeToSchedule = async (classTimeId, scheduleId) => {
   try {
     const classTime = await ClassTime.findById(classTimeId);
@@ -184,4 +215,5 @@ module.exports = {
   assignClassTimeToSchedule,
   assignTeacherToSchedule,
   assignClassRoomToSchedule,
+  assignTeacherToCourse
 };

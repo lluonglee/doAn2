@@ -43,39 +43,6 @@ const createTeacher = async (newTeacher) => {
   }
 };
 
-// Function to get a lecturer by email
-// const getTeacherByEmail = async (email) => {
-//   try {
-//     //console.log(email);
-//     const lecturer = await Teacher.findOne({ email })
-//       .populate("department")
-//       .populate({
-//         path: "schedules", // Populate schedules array
-//         populate: [
-//           {
-//             path: "classes.ma_lop_hoc_phan", // Populate course in class
-//             model: "Course", // Model for Course
-//             populate: {
-//               path: "subject", // Populate subject in course
-//               model: "Subject", // Model for Subject
-//             },
-//           },
-//           {
-//             path: "classes.classTime",
-//             model: "CaHoc",
-//           },
-//           {
-//             path: "classes.rooms",
-//             model: "ClassRoom",
-//           },
-//         ],
-//       });
-//     console.log(lecturer);
-//     return lecturer;
-//   } catch (error) {
-//     throw new Error(error.message);
-//   }
-// };
 const getTeacherByEmail = async (email) => {
   try {
     // Tìm giảng viên theo email
@@ -107,22 +74,42 @@ const getTeacherByEmail = async (email) => {
       throw new Error("Lecturer not found");
     }
 
-    // Lọc schedules để giữ lại những schedule đã được phân công
-    const filteredSchedules = lecturer.schedules.filter((schedule) =>
-      schedule.classes.some(
+    // Lọc schedules để giữ lại những lịch mà giảng viên hiện tại là người phụ trách
+    const assignedSchedules = lecturer.schedules.filter((schedule) => {
+      // Lọc các lớp mà giảng viên được phân công
+      const assignedClasses = schedule.classes.filter(
         (classItem) =>
-          classItem.giang_vien_phu_trach?.toString() === lecturer._id.toString()
-      )
-    );
+          classItem.giang_vien_phu_trach && // Phải có giảng viên phụ trách
+          classItem.giang_vien_phu_trach.toString() === lecturer._id.toString() // Giảng viên đúng là lecturer hiện tại
+      );
 
-    // Thay thế schedules của giảng viên bằng danh sách đã lọc
-    lecturer.schedules = filteredSchedules;
+      // Gán lại danh sách các lớp đã lọc vào schedule
+      schedule.classes = assignedClasses;
+
+      // Chỉ giữ lại những schedules có ít nhất 1 lớp được phân công cho giảng viên
+      return assignedClasses.length > 0;
+    });
+
+    // Loại bỏ các schedule trùng lặp dựa trên `_id`
+    const uniqueSchedules = [];
+    const scheduleIds = new Set();
+
+    for (const schedule of assignedSchedules) {
+      if (!scheduleIds.has(schedule._id.toString())) {
+        uniqueSchedules.push(schedule);
+        scheduleIds.add(schedule._id.toString());
+      }
+    }
+
+    // Thay thế schedules của giảng viên bằng danh sách đã lọc và không trùng lặp
+    lecturer.schedules = uniqueSchedules;
 
     return lecturer;
   } catch (error) {
     throw new Error(error.message);
   }
 };
+
 
 //
 // const getTeacherByMa_khoa = async (ma_khoa) => {

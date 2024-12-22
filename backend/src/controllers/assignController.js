@@ -14,6 +14,20 @@ const assignController = {
       });
     }
   },
+  assignTeacherToCourse: async (req, res) => {
+    const { courseId, teacherId } = req.body;  // Only need courseId and teacherId
+    try {
+      const result = await ScheduleService.assignTeacherToCourse(
+        courseId,
+        teacherId
+      );
+      res.status(200).json(result);
+    } catch (error) {
+      return res.status(404).json({
+        error: error.message,
+      });
+    }
+  },
 
   assignClassTimeToSchedule: async (req, res) => {
     const { classTimeId, scheduleId } = req.body;
