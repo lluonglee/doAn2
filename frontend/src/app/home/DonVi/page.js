@@ -135,7 +135,7 @@
 //         <div className="w-full max-w-3xl bg-white p-4 rounded-lg shadow-md">
 //           <div className="mb-4 text-center">
 //             <h2 className="text-xl font-semibold text-blue-600">
-//               {departmentData.ten_khoa}
+//               {departmentData[0]?.department?.ten_khoa || "Tên Khoa"}
 //             </h2>
 //           </div>
 
@@ -153,33 +153,36 @@
 //                 </tr>
 //               </thead>
 //               <tbody>
-//                 {departmentData.schedules?.map((schedule) =>
-//                   schedule.classes.map((classItem) => (
-//                     <tr key={classItem._id} className="hover:bg-gray-50">
-//                       <td className="py-2 px-4 border-b border-gray-300 text-sm">
-//                         {schedule.dayOfWeek}
-//                       </td>
-//                       <td className="py-2 px-4 border-b border-gray-300 text-sm">
-//                         {classItem.ma_lop_hoc_phan.ma_lop_hoc_phan}
-//                         <br />
-//                         <strong>
-//                           {classItem.ma_lop_hoc_phan.subject.ten_mon} -{" "}
-//                           {classItem.ma_lop_hoc_phan.loai_mon_hoc}
-//                         </strong>
-//                         <br />
-//                         <span className="font-semibold">GV:</span>{" "}
-//                         {classItem.giang_vien_phu_trach?.ten ||
-//                           "Chưa phân công"}
-//                         <br />
-//                         <span className="font-semibold">Phòng:</span>{" "}
-//                         {classItem.rooms.room}
-//                         <br />
-//                         <span className="font-semibold">Thời gian:</span>{" "}
-//                         {classItem.classTime.tenCa}{" "}
-//                         {classItem.classTime.thoiGian}
-//                       </td>
-//                     </tr>
-//                   ))
+//                 {departmentData.map((lecturer) =>
+//                   lecturer.schedules.map((schedule) =>
+//                     schedule.classes.map((classItem) => (
+//                       <tr key={classItem._id} className="hover:bg-gray-50">
+//                         <td className="py-2 px-4 border-b border-gray-300 text-sm">
+//                           {schedule.dayOfWeek}
+//                         </td>
+//                         <td className="py-2 px-4 border-b border-gray-300 text-sm">
+//                           {classItem.ma_lop_hoc_phan.ma_lop_hoc_phan}
+//                           <br />
+//                           <strong>
+//                             {classItem.ma_lop_hoc_phan.subject.ten_mon} -{" "}
+//                             {classItem.ma_lop_hoc_phan.loai_mon_hoc}
+//                           </strong>
+//                           <br />
+//                           <span className="font-semibold">GV:</span>{" "}
+//                           {classItem.giang_vien_phu_trach != undefined
+//                             ? classItem.giang_vien_phu_trach.ten
+//                             : "Chưa phân công"}
+//                           <br />
+//                           <span className="font-semibold">Phòng:</span>{" "}
+//                           {classItem.rooms.room}
+//                           <br />
+//                           <span className="font-semibold">Thời gian:</span>{" "}
+//                           {classItem.classTime.tenCa}{" "}
+//                           {classItem.classTime.thoiGian}
+//                         </td>
+//                       </tr>
+//                     ))
+//                   )
 //                 )}
 //               </tbody>
 //             </table>
@@ -347,33 +350,38 @@ export default function DepartmentSchedule() {
               <tbody>
                 {departmentData.map((lecturer) =>
                   lecturer.schedules.map((schedule) =>
-                    schedule.classes.map((classItem) => (
-                      <tr key={classItem._id} className="hover:bg-gray-50">
-                        <td className="py-2 px-4 border-b border-gray-300 text-sm">
-                          {schedule.dayOfWeek}
-                        </td>
-                        <td className="py-2 px-4 border-b border-gray-300 text-sm">
-                          {classItem.ma_lop_hoc_phan.ma_lop_hoc_phan}
-                          <br />
-                          <strong>
-                            {classItem.ma_lop_hoc_phan.subject.ten_mon} -{" "}
-                            {classItem.ma_lop_hoc_phan.loai_mon_hoc}
-                          </strong>
-                          <br />
-                          <span className="font-semibold">GV:</span>{" "}
-                          {classItem.giang_vien_phu_trach != undefined
-                            ? classItem.giang_vien_phu_trach.ten
-                            : "Chưa phân công"}
-                          <br />
-                          <span className="font-semibold">Phòng:</span>{" "}
-                          {classItem.rooms.room}
-                          <br />
-                          <span className="font-semibold">Thời gian:</span>{" "}
-                          {classItem.classTime.tenCa}{" "}
-                          {classItem.classTime.thoiGian}
-                        </td>
-                      </tr>
-                    ))
+                    schedule.classes
+                      .filter(
+                        (classItem) =>
+                          classItem.giang_vien_phu_trach != undefined
+                      )
+                      .map((classItem) => (
+                        <tr key={classItem._id} className="hover:bg-gray-50">
+                          <td className="py-2 px-4 border-b border-gray-300 text-sm">
+                            {schedule.dayOfWeek}
+                          </td>
+                          <td className="py-2 px-4 border-b border-gray-300 text-sm">
+                            {classItem.ma_lop_hoc_phan.ma_lop_hoc_phan}
+                            <br />
+                            <strong>
+                              {classItem.ma_lop_hoc_phan.subject.ten_mon} -{" "}
+                              {classItem.ma_lop_hoc_phan.loai_mon_hoc}
+                            </strong>
+                            <br />
+                            <span className="font-semibold">GV:</span>{" "}
+                            {classItem.giang_vien_phu_trach.ten}
+                            <br />
+                            <span className="font-semibold">Phòng:</span>{" "}
+                            {classItem.rooms.room}
+                            <br />
+                            <span className="font-semibold">
+                              Thời gian:
+                            </span>{" "}
+                            {classItem.classTime.tenCa}{" "}
+                            {classItem.classTime.thoiGian}
+                          </td>
+                        </tr>
+                      ))
                   )
                 )}
               </tbody>
