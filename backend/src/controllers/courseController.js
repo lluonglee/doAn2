@@ -152,6 +152,29 @@ const courseController = {
     }
   },
 
+  //cập nhật giảng viên
+  updateTeacher: async (req, res) => {
+    const { scheduleId, classId, newTeacherId } = req.body;
+    try {
+      const result = await CourseService.updateTeacherAssignment(
+        scheduleId,
+        classId,
+        newTeacherId
+      );
+  
+      if (result.status === "OK") {
+        return res.status(200).json({ message: result.message });
+      } else {
+        return res.status(400).json({ message: result.message });
+      }
+    } catch (error) {
+      console.error("Error updating teacher:", error);
+      return res
+        .status(500)
+        .json({ message: "An error occurred while updating the teacher" });
+    }
+  },
+  
   assignDepartment: async (req, res) => {
     const { departmentId, courseId } = req.body;
     try {

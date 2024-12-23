@@ -229,6 +229,77 @@ const assignTeacher = async (scheduleId, classId, teacherId) => {
   }
 };
 
+const updateTeacherAssignment = async (scheduleId, classId, newTeacherId) => {
+  try {
+    const schedule = await Schedule.findById(scheduleId);
+    if (!schedule) throw new Error("Schedule not found");
+
+    const newTeacher = await Teacher.findById(newTeacherId).populate({
+      path: "schedules",
+      populate: {
+        path: "classes",
+      },
+    });
+    if (!newTeacher) throw new Error("New teacher not found");
+
+    const classToUpdate = schedule.classes.find(
+      (classItem) => classItem._id.toString() === classId
+    );
+    if (!classToUpdate) throw new Error("Class not found in schedule");
+
+    if (
+      classToUpdate.giang_vien_phu_trach?.toString() === newTeacherId &&
+      !classToUpdate.giang_vien_phu_trach
+    ) {
+      return { status: "OK", message: "No changes required" };
+    }
+
+    const assignedSchedules = newTeacher.schedules.filter((assignedSchedule) =>
+      assignedSchedule.classes.some(
+        (assignedClass) =>
+          assignedClass.giang_vien_phu_trach?.toString() === newTeacherId
+      )
+    );
+
+    for (const assignedSchedule of assignedSchedules) {
+      for (const assignedClass of assignedSchedule.classes) {
+        if (
+          assignedClass.classTime.toString() === classToUpdate.classTime.toString() &&
+          assignedSchedule.dayOfWeek === schedule.dayOfWeek
+        ) {
+          return {
+            status: "Error",
+            message: `Teacher conflict: ${schedule.dayOfWeek}, ${classToUpdate.classTime}`,
+          };
+        }
+      }
+    }
+
+    const previousTeacherId = classToUpdate.giang_vien_phu_trach;
+    classToUpdate.giang_vien_phu_trach = newTeacher._id;
+    await schedule.save();
+
+    if (!newTeacher.schedules.includes(scheduleId)) {
+      newTeacher.schedules.push(scheduleId);
+      await newTeacher.save();
+    }
+
+    if (previousTeacherId) {
+      const previousTeacher = await Teacher.findById(previousTeacherId);
+      if (previousTeacher) {
+        previousTeacher.schedules = previousTeacher.schedules.filter(
+          (schedule) => schedule.toString() !== scheduleId
+        );
+        await previousTeacher.save();
+      }
+    }
+
+    return { status: "OK", message: "Teacher updated successfully" };
+  } catch (error) {
+    console.error(error);
+    return { status: "Error", message: error.message };
+  }
+};
 
 const assignDepartment = async (departmentId, courseId) => {
   try {
@@ -270,4 +341,5 @@ module.exports = {
   deleteCourse,
   assignTeacher,
   assignDepartment,
+  updateTeacherAssignment
 };

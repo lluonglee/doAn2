@@ -17,6 +17,7 @@ router.post("/assign-classTimeToSchedule", assignController.assignClassTimeToSch
 router.post("/assign-teacherToSchedule", assignController.assignTeacherToSchedule)
 router.post("/assign-classRoomToSchedule", assignController.assignClassRoomToSchedule);
 router.post("/assign-teacherToCourse", assignController.assignTeacherToCourse);
+router.put("/update-teacher", courseController.updateTeacher);
 
 
 module.exports = router
